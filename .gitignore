@@ -1,0 +1,8 @@
+.history
+.env
+.venv
+es/data
+etl/es_state.json
+data
+venv
+*.pyc

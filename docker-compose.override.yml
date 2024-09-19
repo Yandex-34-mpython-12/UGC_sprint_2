@@ -1,0 +1,41 @@
+services:
+  films:
+    command: uvicorn src.main:app --host 0.0.0.0 --reload
+    ports:
+      - 8001:8000
+  bigdata:
+    command: uvicorn src.main:app --host 0.0.0.0 --reload
+    ports:
+      - 8002:8000
+  auth:
+    command: uvicorn src.main:app --host 0.0.0.0 --reload
+    ports:
+      - 8003:8000
+  admin:
+    ports:
+      - 8004:8000
+  bigdata_db:
+    ports:
+      - 5433:5432
+  films_db:
+    ports:
+      - 5434:5432
+  auth_db:
+    ports:
+      - 5435:5432
+  clickhouse:
+    ports:
+      - "8123:8123"
+      - "9000:9000"
+  kafka-ui:
+    ports:
+      - ${KAFKA_UI_PORTS}
+  kafka-0:
+    ports:
+      - ${KAFKA_0_PORTS}
+  kafka-1:
+    ports:
+      - ${KAFKA_1_PORTS}
+  kafka-2:
+    ports:
+      - ${KAFKA_2_PORTS}

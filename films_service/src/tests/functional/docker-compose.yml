@@ -1,0 +1,55 @@
+services:
+  fastapi:
+    build: ../../.
+    image: fastapi-image
+    env_file:
+      - tests.env
+    container_name: fastapi-test
+    ports:
+      - "8000:8000"
+
+  tests:
+    image: fastapi-image
+    entrypoint: >
+      sh -c "pip install -r tests/functional/requirements.txt
+      && python3 tests/functional/utils/wait_for_es.py
+      && python3 tests/functional/utils/wait_for_redis.py
+      && pytest tests/functional/src"
+    volumes:  # TODO: Для локальных запусков, чтобы постоянно не пересобирать image
+      - ../../tests:/app/tests
+    env_file:
+      - tests.env
+
+  redis:
+    image: redis:7.2.4
+    container_name: redis-test
+    ports:
+      - "6379:6379"
+
+  postgres:
+    image: postgres:16
+    env_file:
+      - tests.env
+    container_name: postgres-test
+    ports:
+      - "5432:5432"
+
+  elasticsearch:
+    image: elasticsearch:8.6.2
+    container_name: elasticsearch-test
+    environment:
+      - xpack.security.enabled=false
+      - discovery.type=single-node
+    ports:
+      - "9200:9200"
+
+#  etl:
+#    build:
+#      context: etl
+#    env_file: .env
+#    volumes:
+#      - ./etl/es_state.json:/usr/src/app/es_state.json
+#    depends_on:
+#      - postgres
+#      - elasticsearch
+#    restart: always

@@ -1,0 +1,280 @@
+services:
+  admin:
+    build: admin_service/app
+    container_name: admin
+    env_file: .env
+    volumes:
+      - ./admin_service/data/static:/opt/data/static
+      - ./admin_service/data/media:/opt/data/media
+    depends_on:
+      - films_db
+      - elasticsearch
+    expose:
+      - 8000
+
+  films:
+    build: films_service
+    container_name: films
+    env_file: .env
+    volumes:
+      - ./films_service:/app
+    expose:
+      - 8000
+    depends_on:
+      - etl
+      - elasticsearch
+      - redis
+      - tracer
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost:8000/api/health/ || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  films_db:
+    image: bitnami/postgresql:16
+    container_name: films_db
+    env_file: .env
+    environment:
+      - POSTGRESQL_DATABASE=${POSTGRES_DB_FILMS}
+      - POSTGRESQL_USERNAME=${POSTGRES_USER_FILMS}
+      - POSTGRESQL_PASSWORD=${POSTGRES_PASSWORD_FILMS}
+      - POSTGRESQL_MASTER_HOST=${DB_HOST_FILMS}
+      - POSTGRESQL_MASTER_PORT_NUMBER=${DB_PORT_FILMS}
+    volumes:
+      - films_db_data:/var/lib/postgresql/data
+      - ./db/db_dump_260624.sql:/docker-entrypoint-initdb.d/db_dump_260624.sql
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -d films_db -U postgres"]
+      interval: 2s
+      timeout: 10s
+      retries: 30
+
+  auth:
+    build: auth_service
+    container_name: auth
+    env_file: .env
+    volumes:
+      - ./auth_service:/app
+    expose:
+      - 8000
+    depends_on:
+      - auth_db
+      - redis
+      - tracer
+    healthcheck:
+      test:
+        [
+          "CMD-SHELL",
+          "curl -f http://auth:${AUTH_CONFIG__RUN__PORT}/api/v1/health/ || exit 1",
+        ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  auth_db:
+    image: bitnami/postgresql:16
+    container_name: auth_db
+    env_file: .env
+    volumes:
+      - auth_db_data:/var/lib/postgresql/data
+    environment:
+      - POSTGRESQL_DATABASE=${AUTH_CONFIG__DB__DB_NAME}
+      - POSTGRESQL_USERNAME=${AUTH_CONFIG__DB__USER}
+      - POSTGRESQL_PASSWORD=${AUTH_CONFIG__DB__PASSWORD}
+      - POSTGRESQL_MASTER_HOST=${AUTH_CONFIG__DB__HOST}
+      - POSTGRESQL_MASTER_PORT_NUMBER=${AUTH_CONFIG__DB__PORT}
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -d auth_db -U postgres"]
+      interval: 2s
+      timeout: 10s
+      retries: 30
+
+  bigdata:
+    build: bigdata_service
+    container_name: bigdata
+    env_file: .env
+    volumes:
+      - ./bigdata_service:/app
+    expose:
+      - 8000
+    depends_on:
+      bigdata_db:
+        condition: service_healthy
+      kafka-0:
+        condition: service_healthy
+    restart: always
+    healthcheck:
+      test:
+        ["CMD-SHELL", "curl -f http://localhost:8000/api/v1/health/ || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  bigdata_db:
+    image: bitnami/postgresql:16
+    container_name: bigdata_db
+    env_file: .env
+    environment:
+      - POSTGRESQL_DATABASE=${BIGDATA_CONFIG__DB__DB_NAME}
+      - POSTGRESQL_USERNAME=${BIGDATA_CONFIG__DB__USER}
+      - POSTGRESQL_PASSWORD=${BIGDATA_CONFIG__DB__PASSWORD}
+      - POSTGRESQL_MASTER_HOST=${BIGDATA_CONFIG__DB__HOST}
+      - POSTGRESQL_MASTER_PORT_NUMBER=${BIGDATA_CONFIG__DB__PORT}
+    expose:
+      - 5432
+    volumes:
+      - bigdata_db_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -d auth_db -U postgres"]
+      interval: 2s
+      timeout: 10s
+      retries: 30
+
+  redis:
+    image: redis:7.4.0
+    container_name: redis
+    env_file: .env
+    volumes:
+      - redis_data:/data
+    expose:
+      - 6379
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    depends_on:
+      - elasticsearch
+
+  elasticsearch:
+    build: "./es"
+    container_name: elasticsearch
+    expose:
+      - 9200
+    volumes:
+      - ./es/config/elasticsearch.yml:/usr/share/elasticsearch/config/elasticsearch.yml:ro
+      - es_data:/usr/share/elasticsearch/data
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:${ELASTICSEARCH_PORT}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  etl:
+    build: ./etl
+    container_name: etl
+    env_file: .env
+    volumes:
+      - ./etl/es_state.json:/usr/src/app/es_state.json
+    depends_on:
+      - films_db
+      - elasticsearch
+    restart: always
+
+  ugc_etl:
+    build: ./ugc_etl
+    container_name: ugc_etl
+    env_file: .env
+    depends_on:
+      clickhouse:
+        condition: service_healthy
+      kafka-0:
+        condition: service_healthy
+    restart: always
+
+  tracer:
+    image: jaegertracing/all-in-one:latest
+    container_name: tracer
+    env_file: .env
+    expose:
+      - "9411"
+      - "6831/udp"
+    command:
+      ["--collector.zipkin.host-port=0.0.0.0:${COLLECTOR_ZIPKIN_HTTP_PORT}"]
+    restart: on-failure
+
+  nginx:
+    image: nginx:1.27.1
+    container_name: nginx
+    env_file: .env
+    ports:
+      - "80:80"
+    volumes:
+      - ./admin_service/data:/data/:ro
+      - ./admin_service/data/static:/static
+      - ./admin_service/data/media:/media
+      - ./etc/nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./etc/nginx/conf.d:/etc/nginx/conf.d:ro
+    depends_on:
+      - admin
+      - films
+      - auth
+
+  kafka-0:
+    build: ./kafka
+    container_name: kafka-0
+    env_file:
+      - .env
+      - ./kafka/env/kafka_0.env
+    volumes:
+      - kafka-0_data:/bitnami/kafka
+    healthcheck:
+      test: kafka-cluster.sh cluster-id --bootstrap-server localhost:9092 || exit 1
+      interval: 1s
+      timeout: 60s
+      retries: 60
+
+  kafka-1:
+    build: ./kafka
+    container_name: kafka-1
+    env_file:
+      - .env
+      - ./kafka/env/kafka_1.env
+    volumes:
+      - kafka-1_data:/bitnami/kafka
+    healthcheck:
+      test: kafka-cluster.sh cluster-id --bootstrap-server localhost:9092 || exit 1
+      interval: 1s
+      timeout: 60s
+      retries: 60
+
+  kafka-2:
+    build: ./kafka
+    container_name: kafka-2
+    env_file:
+      - .env
+      - ./kafka/env/kafka_2.env
+    volumes:
+      - kafka-2_data:/bitnami/kafka
+    healthcheck:
+      test: kafka-cluster.sh cluster-id --bootstrap-server localhost:9092 || exit 1
+      interval: 1s
+      timeout: 60s
+      retries: 60
+
+  kafka-ui:
+    image: provectuslabs/kafka-ui:v0.7.2
+    container_name: kafka-ui
+    env_file:
+      - .env
+
+  clickhouse:
+    image: yandex/clickhouse-server:latest
+    container_name: clickhouse
+    volumes:
+      - clickhouse_data:/var/lib/clickhouse
+    healthcheck:
+      test: wget --no-verbose --tries=1 --spider http://localhost:8123/ping || exit 1
+
+volumes:
+  films_db_data:
+  auth_db_data:
+  admin_db_data:
+  bigdata_db_data:
+  redis_data:
+  es_data:
+  kafka-0_data:
+  kafka-1_data:
+  kafka-2_data:
+  clickhouse_data:
