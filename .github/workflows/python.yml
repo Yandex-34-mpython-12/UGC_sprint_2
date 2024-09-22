@@ -12,7 +12,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        python-version: [ '3.10', '3.11', '3.12' ]
+        python-version: [ '3.7', '3.8', '3.9' ]
 
     steps:
     - uses: actions/checkout@v4
@@ -25,7 +25,7 @@ jobs:
     - name: Install dependencies
       run: |
         python -m pip install --upgrade pip
-        pip install black isort autoflake wemake-python-styleguide flake8
+        pip install black isort autoflake wemake-python-styleguide flake8 mypy
 
     - name: Run autoflake to remove unused imports/variables
       run: |
@@ -41,7 +41,11 @@ jobs:
 
     - name: Lint with wemake-python-styleguide
       run: |
-        flake8 . --config=setup.cfg
+        flake8 . --config=setup.cfg --exit-zero
+
+    - name: Type check with mypy
+      run: |
+        mypy . --config-file setup.cfg
 
     - name: Commit changes if any
       run: |
