@@ -54,11 +54,9 @@ jobs:
         name: flake8-report
         path: flake8-report/index.html
 
-    # Uncomment to send success message to Telegram
-    # - name: Send success message to Telegram
-    #   if: success()
-    #   env:
-    #     BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
-    #     CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
-    #   run: |
-    #     curl -s -X POST https://api.telegram.org/bot${{ secrets.BOT_TOKEN }}/sendMessage -d chat_id=${{ secrets.CHAT_ID }} -d text="CI Pipeline passed successfully on Python ${{ matrix.python-version }}!"
+    - name: Send success message to Telegram
+      if: success()  # Выполняем шаг только при успешном завершении всех предыдущих шагов
+      run: |
+        curl -s -X POST https://api.telegram.org/bot${{secrets.TELEGRAM_BOT_TOKEN}}/sendMessage \
+          -d chat_id=-4226144479 \
+          -d text="CI Pipeline passed successfully on Python ${{ matrix.python-version }}!"
