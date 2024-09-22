@@ -25,7 +25,7 @@ jobs:
     - name: Install dependencies
       run: |
         python -m pip install --upgrade pip
-        pip install autopep8 isort autoflake flake8 mypy
+        pip install autopep8 isort autoflake flake8 mypy flake8-html
 
     - name: Run autoflake to remove unused imports/variables
       run: |
@@ -41,7 +41,7 @@ jobs:
 
     - name: Lint with flake8
       run: |
-        flake8 . --config=setup.cfg --exit-zero
+        flake8 . --config=setup.cfg --exit-zero --format=html --htmldir=flake8-report/
 
     - name: Type check with mypy
       run: |
