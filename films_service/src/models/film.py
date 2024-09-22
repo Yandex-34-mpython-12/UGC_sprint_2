@@ -41,5 +41,6 @@ class Film(BaseOrjsonModel):
                 )
                 for person in document['_source']['writers']
             ],
-            genres=[Genre(uuid=genre['id'], name=genre['name']) for genre in document['_source']['genres']],
+            genres=[Genre(uuid=genre['id'], name=genre['name'])
+                    for genre in document['_source']['genres']],
         )

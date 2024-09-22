@@ -18,7 +18,8 @@ class UserSignIn(Base):
         }
     )
 
-    id: Mapped[UUID_ID] = mapped_column(GUID, primary_key=True, default=uuid.uuid4, nullable=False)
+    id: Mapped[UUID_ID] = mapped_column(
+        GUID, primary_key=True, default=uuid.uuid4, nullable=False)
     user_id: Mapped[UUID_ID] = mapped_column(ForeignKey("users.user.id"))
     logged_in_at: Mapped[datetime] = mapped_column(server_default=func.now())
     user_agent: Mapped[str] = mapped_column()

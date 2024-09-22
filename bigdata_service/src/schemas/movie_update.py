@@ -17,4 +17,3 @@ class MovieProgressUpdate(BaseModel):
     status: MovieStatus
     progress: float
     last_watched: datetime
-

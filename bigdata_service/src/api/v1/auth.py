@@ -20,12 +20,15 @@ class JWTBearer(HTTPBearer):
     async def __call__(self, request: Request) -> User:
         credentials: HTTPAuthorizationCredentials = await super().__call__(request)
         if not credentials:
-            raise HTTPException(status_code=http.HTTPStatus.FORBIDDEN, detail='Invalid authorization code.')
+            raise HTTPException(status_code=http.HTTPStatus.FORBIDDEN,
+                                detail='Invalid authorization code.')
         if not credentials.scheme == 'Bearer':
-            raise HTTPException(status_code=http.HTTPStatus.UNAUTHORIZED, detail='Only Bearer token might be accepted')
+            raise HTTPException(status_code=http.HTTPStatus.UNAUTHORIZED,
+                                detail='Only Bearer token might be accepted')
         decoded_token = self.parse_token(credentials.credentials)
         if not decoded_token:
-            raise HTTPException(status_code=http.HTTPStatus.FORBIDDEN, detail='Invalid or expired token.')
+            raise HTTPException(status_code=http.HTTPStatus.FORBIDDEN,
+                                detail='Invalid or expired token.')
         return User(**decoded_token)
 
     def parse_token(self, jwt_token: str) -> Optional[dict]:
