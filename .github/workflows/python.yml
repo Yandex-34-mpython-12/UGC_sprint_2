@@ -25,7 +25,7 @@ jobs:
     - name: Install dependencies
       run: |
         python -m pip install --upgrade pip
-        pip install black isort autoflake wemake-python-styleguide flake8 mypy
+        pip install autopep8 isort autoflake wemake-python-styleguide flake8 mypy
 
     - name: Run autoflake to remove unused imports/variables
       run: |
@@ -35,9 +35,9 @@ jobs:
       run: |
         isort .
 
-    - name: Run black to format code
+    - name: Run autopep8 to format code
       run: |
-        black .
+        autopep8 . --recursive --in-place --pep8-passes 2000 --verbose
 
     - name: Lint with wemake-python-styleguide
       run: |
@@ -47,16 +47,19 @@ jobs:
       run: |
         mypy . --config-file setup.cfg
 
-    - name: Commit changes if any
-      run: |
-        git config --global user.name "GitHub Actions"
-        git config --global user.email "actions@github.com"
-        git add .
-        git commit -m "Apply auto-fixes for linting issues" || echo "No changes to commit"
-
+    - uses: stefanzweifel/git-auto-commit-action@v4
+      
     - name: Upload HTML linting report
       if: always()
       uses: actions/upload-artifact@v3
       with:
         name: flake8-report
         path: flake8-report/index.html
+
+    # - name: Send success message to Telegram
+    #   if: success()  # Выполняем шаг только при успешном завершении всех предыдущих шагов
+    #   env:
+    #     BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+    #     CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+    #   run: |
+    #     curl -s -X POST https://api.telegram.org/bot${{ secrets.BOT_TOKEN }}/sendMessage -d chat_id=${{ secrets.CHAT_ID }} -d text="CI Pipeline passed successfully on Python ${{ matrix.python-version }}!"
