@@ -2,10 +2,8 @@ from functools import wraps
 
 import jwt
 from fastapi import Depends, HTTPException, status, Request
-
-
 import http
-from typing import Optional
+from typing import Optional, Dict, Any
 
 from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
 
@@ -31,18 +29,27 @@ class JWTBearer(HTTPBearer):
                                 detail='Invalid or expired token.')
         return User(**decoded_token)
 
-    def parse_token(self, jwt_token: str) -> Optional[dict]:
+    def parse_token(self, jwt_token: str) -> Optional[Dict[str, Any]]:
+        """Parse the JWT token and return the decoded dictionary."""
         return self.decode_token(jwt_token)
 
     @staticmethod
-    def decode_token(token: str) -> Optional[dict]:
+    def decode_token(token: str) -> Optional[Dict[str, Any]]:
+        """Decode the JWT token and return a dictionary or None if invalid."""
         try:
-            return jwt.decode(
+            # Explicitly casting the result of jwt.decode to a dictionary
+            # Decode the token
+            decoded = jwt.decode(
                 token, settings.jwt_secret_key,
                 audience="fastapi-users:auth",
                 algorithms=[settings.jwt_algorithm]
             )
-        except Exception:
+            # Assert that decoded is of the expected type
+            if isinstance(decoded, dict):
+                return decoded  # Type is confirmed to be a dict
+            else:
+                raise ValueError("Decoded token is not a dictionary.")
+        except jwt.PyJWTError:
             return None
 
 
