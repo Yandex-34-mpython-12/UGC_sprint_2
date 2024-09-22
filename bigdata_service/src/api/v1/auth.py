@@ -55,7 +55,9 @@ def roles_required(roles_list: list[UserRole]):
     def decorator(function):
         @wraps(function)
         async def wrapper(*args, **kwargs):
-            user: User = kwargs.get('request').custom_user
+            request: Request = kwargs.get('request')
+            user: User = request.custom_user
+
             if not user or user.role not in [x for x in roles_list]:
                 raise HTTPException(
                     detail='This operation is forbidden for you',
