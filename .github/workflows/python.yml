@@ -10,7 +10,6 @@ jobs:
   build:
 
     runs-on: ubuntu-latest
-    continue-on-error: True
     strategy:
       matrix:
         python-version: [ '3.10', '3.11', '3.12' ]
@@ -26,10 +25,34 @@ jobs:
     - name: Install dependencies
       run: |
         python -m pip install --upgrade pip
-        pip install wemake-python-styleguide
+        pip install black isort autoflake wemake-python-styleguide flake8
+
+    - name: Run autoflake to remove unused imports/variables
+      run: |
+        autoflake --in-place --remove-all-unused-imports --remove-unused-variables --recursive .
+
+    - name: Run isort to sort imports
+      run: |
+        isort .
+
+    - name: Run black to format code
+      run: |
+        black .
 
     - name: Lint with wemake-python-styleguide
       run: |
-        flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics
-        flake8 . --count --exit-zero --max-complexity=10 --max-line-length=88 --statistics
-        flake8 . --config=setup.cfg  # This will apply the wemake-python-styleguide linting rules
+        flake8 . --config=setup.cfg
+
+    - name: Commit changes if any
+      run: |
+        git config --global user.name "GitHub Actions"
+        git config --global user.email "actions@github.com"
+        git add .
+        git commit -m "Apply auto-fixes for linting issues" || echo "No changes to commit"
+
+    - name: Upload HTML linting report
+      if: always()
+      uses: actions/upload-artifact@v3
+      with:
+        name: flake8-report
+        path: flake8-report/index.html
