@@ -21,7 +21,8 @@ class Person(BaseOrjsonModel):
             uuid=document['_source']['id'],
             full_name=document['_source']['person'],
             films=[
-                PersonFilms(uuid=film['id'], title=film['title'], imdb_rating=film['imdb_rating'], role=film['role'])
+                PersonFilms(uuid=film['id'], title=film['title'],
+                            imdb_rating=film['imdb_rating'], role=film['role'])
                 for film in document['_source'].get('films', [])
             ],
         )

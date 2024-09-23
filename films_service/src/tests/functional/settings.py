@@ -3,7 +3,8 @@ from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
 class TestSettings(BaseSettings):
-    model_config = SettingsConfigDict(env_file='tests.env', env_file_encoding='utf-8', extra='ignore')
+    model_config = SettingsConfigDict(
+        env_file='tests.env', env_file_encoding='utf-8', extra='ignore')
 
     redis_host: str = Field('127.0.0.1', alias='REDIS_HOST')
     redis_port: int = Field(6379, alias='REDIS_PORT')
