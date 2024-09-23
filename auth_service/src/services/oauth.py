@@ -1,17 +1,13 @@
 from abc import ABC, abstractmethod
 from http import HTTPStatus
 
-from fastapi import Request, HTTPException, status, Depends
+from authlib.integrations.starlette_client import OAuth
+from fastapi import Depends, HTTPException, Request, status
 from fastapi.security.utils import get_authorization_scheme_param
 from httpx import AsyncClient
-
 from src.api.dependencies.http_client import get_http_client
 from src.core.config import settings
 from src.schemas import OAuthUser
-
-
-from authlib.integrations.starlette_client import OAuth
-
 
 oauth = OAuth()
 oauth.register(

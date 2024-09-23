@@ -1,5 +1,6 @@
-import pytest
 import http
+
+import pytest
 
 
 @pytest.mark.parametrize(

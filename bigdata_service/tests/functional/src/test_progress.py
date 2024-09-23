@@ -1,4 +1,5 @@
 import json
+
 import pytest
 from test_data.test_kafka_message import test_kafka_message
 

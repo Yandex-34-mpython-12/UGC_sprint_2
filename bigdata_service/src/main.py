@@ -1,15 +1,14 @@
 import logging
+from contextlib import asynccontextmanager
 
 import uvicorn
 from aiokafka import AIOKafkaProducer
 from fastapi import FastAPI
 from fastapi.responses import ORJSONResponse
-from contextlib import asynccontextmanager
 from src.api import router as api_router
 from src.core.config import settings
 from src.core.logger import LOGGING
 from src.services import kafka
-
 
 logger = logging.getLogger(__name__)
 

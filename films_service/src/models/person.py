@@ -1,5 +1,4 @@
 from pydantic import Field
-
 from src.models.base import BaseIdFullName, BaseOrjsonModel
 
 

@@ -1,5 +1,5 @@
-from redis import Redis
 from backoff import backoff
+from redis import Redis
 
 
 # Define a function to attempt connecting to redis

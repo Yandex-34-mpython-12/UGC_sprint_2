@@ -3,10 +3,9 @@ import uuid
 from functools import lru_cache
 
 from fastapi import Depends
-
 from src.core.sort import FilmSortOptions
-from src.db.elastic import get_elastic, AsyncElasticEngine
-from src.db.redis import get_redis, AsyncRedisCache
+from src.db.elastic import AsyncElasticEngine, get_elastic
+from src.db.redis import AsyncRedisCache, get_redis
 from src.models.film import Film
 from src.services.base_service import BaseService
 

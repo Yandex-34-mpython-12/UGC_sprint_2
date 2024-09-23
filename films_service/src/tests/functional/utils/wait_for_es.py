@@ -1,8 +1,9 @@
-from src.tests.functional.settings import test_settings
-from elasticsearch import Elasticsearch
-from backoff import backoff
-import sys
 import os
+import sys
+
+from backoff import backoff
+from elasticsearch import Elasticsearch
+from src.tests.functional.settings import test_settings
 
 # Get the current file's directory
 current_dir = os.path.dirname(os.path.abspath(__file__))

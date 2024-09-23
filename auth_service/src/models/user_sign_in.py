@@ -1,8 +1,8 @@
 import uuid
 from datetime import datetime
 
-from fastapi_users_db_sqlalchemy import UUID_ID, GUID
-from sqlalchemy import func, ForeignKey, UniqueConstraint
+from fastapi_users_db_sqlalchemy import GUID, UUID_ID
+from sqlalchemy import ForeignKey, UniqueConstraint, func
 from sqlalchemy.orm import Mapped, mapped_column
 
 from .base import Base

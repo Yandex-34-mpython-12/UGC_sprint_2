@@ -1,7 +1,6 @@
 from typing import Annotated
 
 from fastapi import Depends, Query
-
 from src.core.sort import FilmSortOptions
 
 

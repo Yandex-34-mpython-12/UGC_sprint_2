@@ -1,13 +1,13 @@
+from functools import lru_cache
+from typing import Optional
 from uuid import UUID
 
-from src.schemas.movie_rating import MovieRatingResponse
 from fastapi import Depends
-from sqlalchemy.ext.asyncio import AsyncSession
-from src.models import FilmRating
 from sqlalchemy import select
-from functools import lru_cache
+from sqlalchemy.ext.asyncio import AsyncSession
 from src.db.postgres import db_helper
-from typing import Optional
+from src.models import FilmRating
+from src.schemas.movie_rating import MovieRatingResponse
 
 
 class UserDataService:

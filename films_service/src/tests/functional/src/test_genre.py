@@ -1,13 +1,13 @@
+import http
 import json
 import uuid
-import http
+
 import pytest
 import pytest_asyncio
-
-from elasticsearch.helpers import async_bulk
 from elasticsearch import AsyncElasticsearch
-from src.tests.functional.testdata.es_mapping import ES_GENRES_INDEX_MAPPING
+from elasticsearch.helpers import async_bulk
 from src.tests.functional.settings import test_settings
+from src.tests.functional.testdata.es_mapping import ES_GENRES_INDEX_MAPPING
 
 
 @pytest_asyncio.fixture(name='elastic_genres_index', scope='session')

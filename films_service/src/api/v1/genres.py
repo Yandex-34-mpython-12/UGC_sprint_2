@@ -2,7 +2,6 @@ from http import HTTPStatus
 
 from fastapi import APIRouter, Depends, HTTPException, Request
 from pydantic import UUID4
-
 from src.models.base import BaseOrjsonModel
 from src.services.genre import GenreService, get_genre_service
 

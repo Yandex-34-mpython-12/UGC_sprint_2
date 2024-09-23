@@ -1,8 +1,9 @@
+from unittest.mock import patch
+
 import pytest_asyncio
 from aiohttp import ClientSession
-from unittest.mock import patch
-from src.models import User
 from src.core.config import settings
+from src.models import User
 
 
 @pytest_asyncio.fixture

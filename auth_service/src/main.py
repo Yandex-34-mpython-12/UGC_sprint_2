@@ -5,13 +5,12 @@ from fastapi import FastAPI
 from fastapi.responses import ORJSONResponse
 from opentelemetry.instrumentation.fastapi import FastAPIInstrumentor
 from redis.asyncio import Redis
-from starlette.middleware.sessions import SessionMiddleware
-
 from src.api import router as api_router
 from src.core.config import settings
 from src.core.logger import LOGGING
 from src.core.tracer import configure_tracer
 from src.db import redis
+from starlette.middleware.sessions import SessionMiddleware
 
 
 @asynccontextmanager

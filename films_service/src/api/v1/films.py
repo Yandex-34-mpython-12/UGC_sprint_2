@@ -3,12 +3,12 @@ from http import HTTPStatus
 
 from fastapi import APIRouter, Depends, HTTPException, Query, Request
 from pydantic import UUID4
-
 from src.api.v1.deps import PaginationDep, QueryDep, SortDep
 from src.models.auth import UserRole
 from src.models.base import BaseOrjsonModel
 from src.models.film import Film
 from src.services.film import FilmService, get_film_service
+
 from .auth import roles_required
 
 router = APIRouter()

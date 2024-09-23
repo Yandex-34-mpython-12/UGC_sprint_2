@@ -1,14 +1,12 @@
+import http
 from functools import wraps
+from typing import Any, Dict, Optional
 
 import jwt
-from fastapi import Depends, HTTPException, status, Request
-import http
-from typing import Optional, Dict, Any
-
+from fastapi import Depends, HTTPException, Request, status
 from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
-
 from src.core.config import settings
-from src.models.auth import UserRole, AuthRequest, User
+from src.models.auth import AuthRequest, User, UserRole
 
 
 class JWTBearer(HTTPBearer):

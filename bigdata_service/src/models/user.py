@@ -1,8 +1,7 @@
+from enum import Enum
 from uuid import UUID
 
-from fastapi import Request
 from pydantic import Field
-from enum import Enum
 
 from .base import BaseOrjsonModel
 

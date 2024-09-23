@@ -1,4 +1,3 @@
-from django.conf import settings
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
