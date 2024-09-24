@@ -1,10 +1,9 @@
+import json
 from typing import Any
 
 from redis.asyncio import Redis
 from redis.asyncio.client import Pipeline
-
 from src.core.cache import AsyncCache
-import json
 
 redis: Redis | None = None
 

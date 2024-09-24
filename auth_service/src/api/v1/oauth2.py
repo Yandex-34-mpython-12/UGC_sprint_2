@@ -1,8 +1,7 @@
-from fastapi import APIRouter, Request, Depends
-
+from fastapi import APIRouter, Depends, Request
 from src.core.config import settings
 from src.schemas import OAuthUser
-from src.services.oauth import oauth, YandexOauth2, OAuth2Service
+from src.services.oauth import OAuth2Service, YandexOauth2, oauth
 
 router = APIRouter(
     prefix=settings.api.v1.oauth,

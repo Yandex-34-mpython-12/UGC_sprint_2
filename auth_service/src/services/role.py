@@ -5,9 +5,8 @@ from fastapi import Depends
 from sqlalchemy import delete, select, update
 from sqlalchemy.ext.asyncio import AsyncSession
 from src.db.postgres import db_helper
-from src.schemas import RoleCreate, RoleUpdate
-
 from src.models import Role
+from src.schemas import RoleCreate, RoleUpdate
 
 
 class RoleService:

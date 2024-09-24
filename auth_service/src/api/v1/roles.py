@@ -2,7 +2,6 @@ from http import HTTPStatus
 from typing import List
 
 from fastapi import APIRouter, Depends, HTTPException
-
 from src.api.v1.fastapi_users import current_active_superuser
 from src.core.config import settings
 from src.schemas import RoleCreate, RoleRead, RoleUpdate

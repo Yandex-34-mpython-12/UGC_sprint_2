@@ -1,11 +1,10 @@
 from fastapi import APIRouter, Depends
-
-from src.api.v1.fastapi_users import fastapi_users, current_active_user
+from src.api.v1.fastapi_users import current_active_user, fastapi_users
 from src.core.config import settings
 from src.models import User
 from src.schemas import HistoryRead
 from src.schemas.user import UserRead, UserUpdate
-from src.services.history import get_history_service, HistoryService
+from src.services.history import HistoryService, get_history_service
 
 router = APIRouter(
     prefix=settings.api.v1.users,

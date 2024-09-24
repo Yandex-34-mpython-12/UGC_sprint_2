@@ -1,8 +1,9 @@
+from unittest.mock import patch
+
 import pytest_asyncio
 from aiohttp import ClientSession
-from unittest.mock import patch
-from src.models import User
 from src.core.config import settings
+from src.models import User
 
 
 @pytest_asyncio.fixture
@@ -26,7 +27,8 @@ def mock_user():
 
 @pytest_asyncio.fixture
 async def test_update_progress(aiohttp_client, kafka_producer_mock, mock_user):
-    kafka_producer_mock.return_value.send_and_wait = patch('aio_kafka_producer.send_and_wait', return_value=None)
+    kafka_producer_mock.return_value.send_and_wait = patch(
+        'aio_kafka_producer.send_and_wait', return_value=None)
 
     progress_data = {
         "movie_id": "67890",
@@ -45,4 +47,3 @@ async def test_update_progress(aiohttp_client, kafka_producer_mock, mock_user):
         assert response_json['message']['progress'] == progress_data['progress']
         assert response_json['message']['status'] == progress_data['status']
         assert response_json['message']['last_watched'] == progress_data['last_watched']
-

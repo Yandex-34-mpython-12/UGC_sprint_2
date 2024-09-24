@@ -2,6 +2,7 @@ import uuid
 
 from django.contrib.auth.models import AbstractBaseUser
 from django.db import models
+
 from .manager import MyUserManager
 
 

@@ -2,7 +2,6 @@ import logging
 
 from aiokafka import ConsumerRecord
 from pydantic import ValidationError
-
 from schemas.user_movies import UserMoviesSchema
 
 logger = logging.getLogger(__name__)

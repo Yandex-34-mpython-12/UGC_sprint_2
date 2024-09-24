@@ -2,7 +2,6 @@ from http import HTTPStatus
 
 from fastapi import APIRouter, Depends, HTTPException
 from pydantic import UUID4
-
 from src.api.v1.deps import PaginationDep, QueryDep
 from src.api.v1.films import FilmResponse
 from src.models.base import BaseOrjsonModel

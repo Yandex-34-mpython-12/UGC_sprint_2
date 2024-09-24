@@ -2,7 +2,6 @@ import httpx
 import pytest_asyncio
 from elasticsearch import AsyncElasticsearch
 from redis.asyncio import Redis
-
 from src.tests.functional.settings import test_settings
 
 

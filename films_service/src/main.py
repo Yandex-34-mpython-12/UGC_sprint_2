@@ -3,13 +3,12 @@ from contextlib import asynccontextmanager
 
 import uvicorn
 from elasticsearch import AsyncElasticsearch
-from fastapi import FastAPI, Depends
+from fastapi import Depends, FastAPI
 from fastapi.responses import ORJSONResponse
 from opentelemetry.instrumentation.fastapi import FastAPIInstrumentor
 from redis.asyncio import Redis
-
 from src.api.rate_limit import check_rate_limit
-from src.api.v1 import films, genres, health, persons, auth
+from src.api.v1 import auth, films, genres, health, persons
 from src.core.config import settings
 from src.core.logger import LOGGING
 from src.core.tracer import configure_tracer

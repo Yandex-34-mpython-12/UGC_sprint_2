@@ -34,8 +34,10 @@ class Genre(UUIDMixin, TimeStampedMixin):
 
 
 class GenreFilmwork(UUIDMixin):
-    film_work = models.ForeignKey('Filmwork', on_delete=models.CASCADE, verbose_name=_('film work'))
-    genre = models.ForeignKey('Genre', on_delete=models.CASCADE, verbose_name=_('genre'))
+    film_work = models.ForeignKey(
+        'Filmwork', on_delete=models.CASCADE, verbose_name=_('film work'))
+    genre = models.ForeignKey(
+        'Genre', on_delete=models.CASCADE, verbose_name=_('genre'))
     created_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:
@@ -43,7 +45,8 @@ class GenreFilmwork(UUIDMixin):
         verbose_name = 'Жанр фильма'
         verbose_name_plural = 'Жанры фильмов'
         constraints = [
-            models.UniqueConstraint(fields=['film_work_id', 'genre'], name='film_work_genre_idx')
+            models.UniqueConstraint(
+                fields=['film_work_id', 'genre'], name='film_work_genre_idx')
         ]
 
 
@@ -71,9 +74,12 @@ class Person(UUIDMixin, TimeStampedMixin):
 
 
 class PersonFilmwork(UUIDMixin):
-    film_work = models.ForeignKey('Filmwork', on_delete=models.CASCADE, verbose_name=_('film work'))
-    person = models.ForeignKey('Person', on_delete=models.CASCADE, verbose_name=_('person'))
-    role = models.CharField(_('role'), max_length=20, choices=RoleType.choices, null=True)
+    film_work = models.ForeignKey(
+        'Filmwork', on_delete=models.CASCADE, verbose_name=_('film work'))
+    person = models.ForeignKey(
+        'Person', on_delete=models.CASCADE, verbose_name=_('person'))
+    role = models.CharField(_('role'), max_length=20,
+                            choices=RoleType.choices, null=True)
     created_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:
@@ -81,7 +87,8 @@ class PersonFilmwork(UUIDMixin):
         verbose_name = 'Участник фильма'
         verbose_name_plural = 'Участники фильмов'
         constraints = [
-            models.UniqueConstraint(fields=['film_work_id', 'person_id', 'role'], name='film_work_person_idx')
+            models.UniqueConstraint(
+                fields=['film_work_id', 'person_id', 'role'], name='film_work_person_idx')
         ]
 
 

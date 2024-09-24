@@ -1,7 +1,6 @@
 from typing import Any
 
 from elasticsearch import AsyncElasticsearch, NotFoundError
-
 from src.core.search_engine import AsyncSearchEngine
 
 es: AsyncElasticsearch | None = None

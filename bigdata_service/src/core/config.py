@@ -4,7 +4,6 @@ from logging import config as logging_config
 
 from pydantic import BaseModel, Field
 from pydantic_settings import BaseSettings, SettingsConfigDict
-
 from src.core.logger import LOGGING
 
 # Применяем настройки логирования

@@ -3,15 +3,11 @@ import contextlib
 from os import getenv
 
 from fastapi_users.exceptions import UserAlreadyExists
-
-from src.api.dependencies.authentication import get_users_db
-from src.api.dependencies.authentication import get_user_manager
+from src.api.dependencies.authentication import get_user_manager, get_users_db
 from src.authentication.user_manager import UserManager
 from src.db.postgres import db_helper
 from src.models import User
-
 from src.schemas import UserCreate
-
 
 get_users_db_context = contextlib.asynccontextmanager(get_users_db)
 get_user_manager_context = contextlib.asynccontextmanager(get_user_manager)

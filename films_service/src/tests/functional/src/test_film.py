@@ -1,14 +1,14 @@
-import json
 import http
+import json
 import random
 import uuid
+
 import pytest
 import pytest_asyncio
-
-from elasticsearch.helpers import async_bulk
 from elasticsearch import AsyncElasticsearch
-from src.tests.functional.testdata.es_mapping import ES_MOVIES_INDEX_MAPPING
+from elasticsearch.helpers import async_bulk
 from src.tests.functional.settings import test_settings
+from src.tests.functional.testdata.es_mapping import ES_MOVIES_INDEX_MAPPING
 
 
 @pytest_asyncio.fixture(name='elastic_films_index', scope='session')

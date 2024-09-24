@@ -1,12 +1,13 @@
+from functools import lru_cache
+from typing import Optional
 from uuid import UUID
 
-from src.schemas.movie_rating import MovieRatingResponse
 from fastapi import Depends
-from sqlalchemy.ext.asyncio import AsyncSession
-from src.models import FilmRating
 from sqlalchemy import select
-from functools import lru_cache
+from sqlalchemy.ext.asyncio import AsyncSession
 from src.db.postgres import db_helper
+from src.models import FilmRating
+from src.schemas.movie_rating import MovieRatingResponse
 
 
 class UserDataService:
@@ -16,8 +17,10 @@ class UserDataService:
     async def add_film_rating(self, user_id: UUID, movie_id: UUID, rating: int) -> MovieRatingResponse:
         query = select(FilmRating).where(FilmRating.user_id ==
                                          user_id, FilmRating.movie_id == movie_id)
-        existing_rating = await self.db.execute(query)
-        existing_rating = existing_rating.scalars().first()
+        result = await self.db.execute(query)
+
+        # Type hint for existing_rating should be Optional[FilmRating] since it can be None
+        existing_rating: Optional[FilmRating] = result.scalars().first()
 
         if existing_rating:
             # If a rating exists, update it

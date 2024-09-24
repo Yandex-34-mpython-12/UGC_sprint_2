@@ -1,12 +1,13 @@
 import json
+
 from aiokafka import AIOKafkaProducer
 from fastapi import APIRouter, Depends
-
+from src.core.config import settings
 from src.models import User
 from src.schemas import MovieProgressUpdate
 from src.services.kafka import get_kafka_producer
+
 from .auth import get_current_user_global
-from src.core.config import settings
 
 router = APIRouter(
     prefix="/movies",

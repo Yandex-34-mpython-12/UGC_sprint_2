@@ -1,5 +1,6 @@
-import pytest
 import http
+
+import pytest
 
 
 @pytest.mark.parametrize(
@@ -13,7 +14,8 @@ import http
             {'query': 'The Star', 'page_size': 30, 'page_number': 1, 'sort': '-imdb_rating'},
             {'status': http.HTTPStatus.OK, 'length': 30},
         ),
-        ({'query': 'Mashed potato', 'page_size': 20, 'page_number': 1}, {'status': http.HTTPStatus.OK, 'length': 0}),
+        ({'query': 'Mashed potato', 'page_size': 20, 'page_number': 1},
+         {'status': http.HTTPStatus.OK, 'length': 0}),
     ],
 )
 @pytest.mark.asyncio(scope='session')

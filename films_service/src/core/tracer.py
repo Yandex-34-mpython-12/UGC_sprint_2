@@ -1,13 +1,8 @@
 from opentelemetry import trace
-from opentelemetry.sdk.resources import (
-    SERVICE_NAME,
-    SERVICE_VERSION,
-    Resource,
-)
-from opentelemetry.sdk.trace import TracerProvider
-from opentelemetry.sdk.trace.export import BatchSpanProcessor, ConsoleSpanExporter
 from opentelemetry.exporter.jaeger.thrift import JaegerExporter
-
+from opentelemetry.sdk.resources import SERVICE_NAME, SERVICE_VERSION, Resource
+from opentelemetry.sdk.trace import TracerProvider
+from opentelemetry.sdk.trace.export import BatchSpanProcessor
 from src.core.config import settings
 
 

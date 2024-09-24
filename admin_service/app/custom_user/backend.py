@@ -4,8 +4,9 @@ from enum import Enum
 import jwt
 import requests
 from django.conf import settings
-from django.contrib.auth.backends import BaseBackend
 from django.contrib.auth import get_user_model
+from django.contrib.auth.backends import BaseBackend
+
 from .cache.token_cache import cache_token, get_cached_token
 
 User = get_user_model()
@@ -53,7 +54,7 @@ class CustomBackend(BaseBackend):
                 algorithms=[settings.JWT_ALGORITHM]
             )
             cache_token(username, res['access_token'])
-        except Exception as e:
+        except Exception:
             return None
 
         return self.get_or_create_user(data)
@@ -66,7 +67,7 @@ class CustomBackend(BaseBackend):
             user.is_active = data.get('is_active', True)
             user.save()
             return user
-        except Exception as e:
+        except Exception:
             # TODO: Log the error
             return None
 

@@ -5,7 +5,6 @@ from uuid import UUID
 from fastapi import Depends
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
-
 from src.db.postgres import db_helper
 from src.models import UserSignIn
 

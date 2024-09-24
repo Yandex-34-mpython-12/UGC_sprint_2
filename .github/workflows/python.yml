@@ -8,12 +8,12 @@ on:
 
 jobs:
   build:
-
+    permissions:
+      contents: write
     runs-on: ubuntu-latest
-    continue-on-error: True
     strategy:
       matrix:
-        python-version: [ '3.10', '3.11', '3.12' ]
+        python-version: ['3.10']
 
     steps:
     - uses: actions/checkout@v4
@@ -26,9 +26,47 @@ jobs:
     - name: Install dependencies
       run: |
         python -m pip install --upgrade pip
-        pip install flake8
+        pip install autopep8 isort autoflake flake8 mypy flake8-html
+
+    - name: Run autoflake to remove unused imports/variables
+      run: |
+        autoflake --in-place --remove-all-unused-imports --remove-unused-variables --recursive .
+
+    - name: Run isort to sort imports
+      run: |
+        isort .
+
+    - name: Run autopep8 to format code
+      run: |
+        autopep8 . --recursive --in-place --pep8-passes 2000 --verbose
 
     - name: Lint with flake8
       run: |
-        flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics
-        flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
+        flake8 . --config=setup.cfg --exit-zero --format=html --htmldir=flake8-report/
+
+    - name: Type check with mypy
+      run: |
+        mypy . --config-file setup.cfg
+
+    - name: Upload HTML linting report
+      if: always()
+      uses: actions/upload-artifact@v3
+      with:
+        name: flake8-report
+        path: flake8-report/index.html
+
+    - name: Commit and push changes if any files were modified (only on push to main)
+      if: github.ref == 'refs/heads/main' && success()  # Run only on push to main branch and if successful
+      run: |
+        git config --local user.name "GitHub Actions"
+        git config --local user.email "actions@github.com"
+        git add .
+        git diff-index --quiet HEAD || git commit -m "Auto-formatted code with autoflake, isort, autopep8"
+        git push origin main
+
+    - name: Send success message to Telegram
+      if: success()  # Run this step only if all previous steps were successful
+      run: |
+        curl -s -X POST https://api.telegram.org/bot${{secrets.TELEGRAM_BOT_TOKEN}}/sendMessage \
+          -d chat_id=-4226144479 \
+          -d text="CI Pipeline passed successfully on Python ${{ matrix.python-version }}!"

@@ -1,8 +1,8 @@
 import uuid
 from datetime import datetime
 
-from fastapi_users_db_sqlalchemy import UUID_ID, GUID
-from sqlalchemy import func, ForeignKey, UniqueConstraint
+from fastapi_users_db_sqlalchemy import GUID, UUID_ID
+from sqlalchemy import ForeignKey, UniqueConstraint, func
 from sqlalchemy.orm import Mapped, mapped_column
 
 from .base import Base
@@ -18,7 +18,8 @@ class UserSignIn(Base):
         }
     )
 
-    id: Mapped[UUID_ID] = mapped_column(GUID, primary_key=True, default=uuid.uuid4, nullable=False)
+    id: Mapped[UUID_ID] = mapped_column(
+        GUID, primary_key=True, default=uuid.uuid4, nullable=False)
     user_id: Mapped[UUID_ID] = mapped_column(ForeignKey("users.user.id"))
     logged_in_at: Mapped[datetime] = mapped_column(server_default=func.now())
     user_agent: Mapped[str] = mapped_column()

@@ -1,7 +1,9 @@
-from elasticsearch import Elasticsearch
-from backoff import backoff
-import sys
 import os
+import sys
+
+from backoff import backoff
+from elasticsearch import Elasticsearch
+from src.tests.functional.settings import test_settings
 
 # Get the current file's directory
 current_dir = os.path.dirname(os.path.abspath(__file__))
@@ -13,7 +15,6 @@ parent_dir = os.path.abspath(os.path.join(current_dir, os.pardir, os.pardir, os.
 sys.path.insert(0, parent_dir)
 
 # Now you can import the module
-from src.tests.functional.settings import test_settings
 
 
 # Define a function to attempt connecting to Elasticsearch

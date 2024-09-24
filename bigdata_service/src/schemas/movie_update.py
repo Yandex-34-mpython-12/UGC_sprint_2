@@ -1,8 +1,8 @@
 from datetime import datetime
 from enum import Enum
+from uuid import UUID
 
 from pydantic import BaseModel, ConfigDict
-from uuid import UUID
 
 
 class MovieStatus(Enum):
@@ -17,4 +17,3 @@ class MovieProgressUpdate(BaseModel):
     status: MovieStatus
     progress: float
     last_watched: datetime
-

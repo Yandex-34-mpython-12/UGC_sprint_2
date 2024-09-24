@@ -1,7 +1,7 @@
+from unittest.mock import patch
+
 import pytest
 from src.models import User
-from unittest.mock import patch
-from src.api.auth import get_current_user_global
 
 
 @pytest.fixture
