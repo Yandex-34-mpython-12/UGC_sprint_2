@@ -1,16 +1,16 @@
 services:
-#  admin:
-#    build: admin_service/app
-#    container_name: admin
-#    env_file: .env
-#    volumes:
-#      - ./admin_service/data/static:/opt/data/static
-#      - ./admin_service/data/media:/opt/data/media
-#    depends_on:
-#      - films_db
-#      - elasticsearch
-#    expose:
-#      - 8000
+  admin:
+    build: admin_service/app
+    container_name: admin
+    env_file: .env
+    volumes:
+      - ./admin_service/data/static:/opt/data/static
+      - ./admin_service/data/media:/opt/data/media
+    depends_on:
+      - films_db
+      - elasticsearch
+    expose:
+      - 8000
 
   films:
     build: films_service
@@ -209,7 +209,7 @@ services:
       - ./etc/nginx/nginx.conf:/etc/nginx/nginx.conf:ro
       - ./etc/nginx/conf.d:/etc/nginx/conf.d:ro
     depends_on:
-#      - admin
+      - admin
       - films
       - auth
 
