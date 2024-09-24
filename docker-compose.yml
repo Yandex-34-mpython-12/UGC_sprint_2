@@ -18,8 +18,11 @@ services:
     env_file: .env
     volumes:
       - ./films_service:/app
+      - films_logs:/app/logs
     expose:
       - 8000
+    ports:
+      - '8000:8000'
     depends_on:
       - etl
       - elasticsearch
@@ -59,6 +62,8 @@ services:
       - auth_logs:/app/logs
     expose:
       - 8000
+    ports:
+      - '8001:8000'
     depends_on:
       - auth_db
       - redis
@@ -279,6 +284,17 @@ services:
       - kibana
       - elasticsearch-logs
 
+  filebeat-films-api:
+    build:
+      context: ./films_service/infra/filebeat
+    container_name: filebeat_films
+    volumes:
+      - films_logs:/var/app/log
+    depends_on:
+      - films
+      - kibana
+      - elasticsearch-logs
+
   logstash:
     image: logstash:8.10.2
     depends_on:
@@ -324,4 +340,5 @@ volumes:
   kafka-2_data:
   clickhouse_data:
   auth_logs:
+  films_logs:
   es-logs-data:
