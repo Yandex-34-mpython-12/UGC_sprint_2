@@ -10,7 +10,7 @@ LOG_FORMAT = '{"request_id": "%(request_id)s", "asctime": \
              "%(asctime)s", "levelname": "%(levelname)s", \
              "name": "%(name)s", "message": "%(message)s", \
              "host": "%(host)s", "user-agent": "%(user-agent)s", "method": "%(method)s", "path": "%(path)s", \
-             "query_params": "%(query_params)s", "status_code": "%(status_code)s", "request_body": "%(request_body)s"}'
+             "query_params": "%(query_params)s", "status_code": "%(status_code)s"}'
 
 
 def setup_root_logger():
