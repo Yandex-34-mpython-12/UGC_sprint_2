@@ -101,7 +101,7 @@ class OAuth2Config(BaseModel):
 class LoggingConfig(BaseModel):
     log_level: str = 'INFO'
 
-    logger_filename: str = '/app/logs/auth-api-logs.json'  # TODO: rm
+    logger_filename: str
     logger_maxbytes: int = 15000000
     logger_mod: str = 'a'
     logger_backup_count: int = 5
@@ -122,7 +122,7 @@ class Settings(BaseSettings):
     access_token: AccessToken
     jaeger: JaegerConfig = JaegerConfig()
     oauth: OAuth2Config
-    logging: LoggingConfig = LoggingConfig()
+    logging: LoggingConfig
 
 
 settings = Settings()
