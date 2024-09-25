@@ -9,7 +9,7 @@ from src.core.config import settings
 from src.core.pagination import PaginatedPage
 from src.db import mongo
 from src.models import Post
-from src.schemas.post import PostResponse, PostCreateDto
+from src.schemas.post import PostResponse, PostCreateDto, Like, LikeCreateDto
 
 router = APIRouter(prefix='/posts', tags=['Posts'])
 
@@ -129,3 +129,23 @@ async def _get_authors_post(authors_last_name: str) -> list[Post]:
 async def _get_avg_views() -> dict:
     avg = await Post.find().avg(Post.views)
     return {'result': avg}
+
+
+@router.post(
+    '/like',
+    summary='Set like to post',
+    response_model=Like,
+    status_code=status.HTTP_201_CREATED,
+)
+async def _create_like(dto: LikeCreateDto) -> Like:
+    post = await Post.get_by_id(id=dto.post_id)
+    if not post:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=f'Post with id {id} not found',
+        )
+    like = Like(author=dto.author)
+    post.likes.append(like)
+    await post.replace()
+
+    return like

@@ -7,7 +7,7 @@ from pydantic import Field
 from slugify import slugify
 
 from src.schemas.author import Author
-from src.schemas.post import PostCreateDto
+from src.schemas.post import PostCreateDto, Like
 
 
 class Post(Document):
@@ -20,6 +20,7 @@ class Post(Document):
     last_visit_at: datetime | None = None
     created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
     author: Author
+    likes: list[Like] = Field(default_factory=list)
 
     @classmethod
     async def create_new(
