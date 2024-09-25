@@ -7,8 +7,12 @@ from fastapi import FastAPI
 from fastapi.responses import ORJSONResponse
 from src.api import router as api_router
 from src.core.config import settings
-from src.core.logger import LOGGING
+from src.core.logger import LOGGING, setup_root_logger
 from src.services import kafka
+from src.middleware.request_log import RequestLogMiddleware
+
+
+setup_root_logger()
 
 logger = logging.getLogger(__name__)
 
@@ -34,6 +38,8 @@ app = FastAPI(
     root_path="/bigdata",
     lifespan=lifespan
 )
+
+app.add_middleware(RequestLogMiddleware)
 
 app.include_router(api_router)
 

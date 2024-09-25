@@ -98,6 +98,7 @@ services:
     env_file: .env
     volumes:
       - ./bigdata_service:/app
+      - bigdata_logs:/app/logs
     expose:
       - 8000
     depends_on:
@@ -291,6 +292,17 @@ services:
       - kibana
       - elasticsearch-logs
 
+  filebeat-bigdata-api:
+    build:
+      context: ./bigdata_service/infra/filebeat
+    container_name: filebeat_bigdata
+    volumes:
+      - bigdata_logs:/var/app/log
+    depends_on:
+      - bigdata
+      - kibana
+      - elasticsearch-logs
+
   logstash:
     image: logstash:8.10.2
     depends_on:
@@ -335,6 +347,7 @@ volumes:
   kafka-1_data:
   kafka-2_data:
   clickhouse_data:
+  es-logs-data:
   auth_logs:
   films_logs:
-  es-logs-data:
+  bigdata_logs:
