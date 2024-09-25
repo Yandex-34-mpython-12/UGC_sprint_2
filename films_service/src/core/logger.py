@@ -1,9 +1,8 @@
 import logging
+import os
 import uuid
 
 from src.core.config import settings
-import os
-
 from src.core.context import ctx_request_id
 
 LOG_FORMAT = '{"request_id": "%(request_id)s", "asctime": \

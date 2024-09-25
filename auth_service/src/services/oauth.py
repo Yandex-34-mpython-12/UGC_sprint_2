@@ -8,9 +8,8 @@ from fastapi.security.utils import get_authorization_scheme_param
 from httpx import AsyncClient
 from src.api.dependencies.http_client import get_http_client
 from src.core.config import settings
-from src.schemas import OAuthUser
-
 from src.core.context import ctx_request_id
+from src.schemas import OAuthUser
 
 oauth = OAuth()
 oauth.register(

@@ -1,11 +1,10 @@
 import uuid
 
 from fastapi import Request, Response
-from starlette.background import BackgroundTask
-from starlette.middleware.base import BaseHTTPMiddleware
-
 from src.core.context import ctx_request_id
 from src.core.logger import logger
+from starlette.background import BackgroundTask
+from starlette.middleware.base import BaseHTTPMiddleware
 
 
 def write_log_data(request: Request, response: Response):

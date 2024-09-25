@@ -8,9 +8,8 @@ from fastapi.responses import ORJSONResponse
 from src.api import router as api_router
 from src.core.config import settings
 from src.core.logger import LOGGING, setup_root_logger
-from src.services import kafka
 from src.middleware.request_log import RequestLogMiddleware
-
+from src.services import kafka
 
 setup_root_logger()
 

@@ -15,7 +15,6 @@ from src.core.tracer import configure_tracer
 from src.db import elastic, redis
 from src.middleware.request_log import RequestLogMiddleware
 
-
 setup_root_logger()
 
 
