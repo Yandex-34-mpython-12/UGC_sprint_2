@@ -138,14 +138,13 @@ async def _get_avg_views() -> dict:
     status_code=status.HTTP_201_CREATED,
 )
 async def _create_like(dto: LikeCreateDto) -> Like:
-    post = await Post.get_by_id(id=dto.post_id)
-    if not post:
+    like = Like(author=dto.author)
+    result = await Post.find_one(Post.id == dto.post_id).update({"$push": {"likes": like}})
+
+    if result.modified_count == 0:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
-            detail=f'Post with id {id} not found',
+            detail=f'Post with id {dto.post_id} not found',
         )
-    like = Like(author=dto.author)
-    post.likes.append(like)
-    await post.replace()
 
     return like
