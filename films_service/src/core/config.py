@@ -1,13 +1,7 @@
-# config.py
 import os
-from logging import config as logging_config
 
 from pydantic import Field
 from pydantic_settings import BaseSettings, SettingsConfigDict
-from src.core.logger import LOGGING
-
-# Применяем настройки логирования
-logging_config.dictConfig(LOGGING)
 
 
 class Settings(BaseSettings):
@@ -31,6 +25,13 @@ class Settings(BaseSettings):
 
     request_limit_per_minute: int = Field(60, alias='REQUEST_LIMIT_PER_MINUTE')
     enable_tracing: bool = Field(True, alias='ENABLE_TRACING')
+
+    log_level: str = Field('INFO', alias='LOG_LEVEL')
+
+    logger_filename: str = Field(alias='LOGGER_FILENAME')
+    logger_maxbytes: int = Field(15000000, alias='LOGGER_MAXBYTES')
+    logger_mod: str = Field('a', alias='LOGGER_MOD')
+    logger_backup_count: int = Field(5, alias='LOGGER_BACKUP_COUNT')
 
 
 settings = Settings()

@@ -1,13 +1,7 @@
-# config.py
 import os
-from logging import config as logging_config
 
 from pydantic import BaseModel, Field
 from pydantic_settings import BaseSettings, SettingsConfigDict
-from src.core.logger import LOGGING
-
-# Применяем настройки логирования
-logging_config.dictConfig(LOGGING)
 
 
 class ApiV1Prefix(BaseModel):
@@ -31,6 +25,15 @@ class KafkaConfig(BaseModel):
         return f"{self.host}:{self.port}"
 
 
+class LoggingConfig(BaseModel):
+    log_level: str = 'INFO'
+
+    logger_filename: str
+    logger_maxbytes: int = 15000000
+    logger_mod: str = 'a'
+    logger_backup_count: int = 5
+
+
 class Settings(BaseSettings):
     model_config = SettingsConfigDict(
         env_file=f"{os.path.dirname(os.path.abspath(__file__))}/../../.env",
@@ -43,6 +46,7 @@ class Settings(BaseSettings):
     jwt_algorithm: str = Field(..., alias='JWT_ALGORITHM')
     api: ApiPrefix = ApiPrefix()
     kafka: KafkaConfig
+    logging: LoggingConfig
 
 
 settings = Settings()

@@ -10,9 +10,13 @@ from redis.asyncio import Redis
 from src.api.rate_limit import check_rate_limit
 from src.api.v1 import auth, films, genres, health, persons
 from src.core.config import settings
-from src.core.logger import LOGGING
+from src.core.logger import LOGGING, setup_root_logger
 from src.core.tracer import configure_tracer
 from src.db import elastic, redis
+from src.middleware.request_log import RequestLogMiddleware
+
+
+setup_root_logger()
 
 
 @asynccontextmanager
@@ -37,6 +41,8 @@ app = FastAPI(
     lifespan=lifespan,
     root_path="/films"
 )
+
+app.add_middleware(RequestLogMiddleware)
 
 # Set up Jaeger
 if settings.enable_tracing:

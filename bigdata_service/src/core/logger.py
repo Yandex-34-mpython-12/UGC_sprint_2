@@ -1,7 +1,51 @@
-LOG_FORMAT = '%(asctime)s - %(name)s - %(levelname)s - %(message)s'
-LOG_DEFAULT_HANDLERS = [
-    'console',
-]
+import logging
+import uuid
+
+from src.core.config import settings
+import os
+
+from src.core.context import ctx_request_id
+
+LOG_FORMAT = '{"request_id": "%(request_id)s", "asctime": \
+             "%(asctime)s", "levelname": "%(levelname)s", \
+             "name": "%(name)s", "message": "%(message)s", \
+             "host": "%(host)s", "user-agent": "%(user-agent)s", "method": "%(method)s", "path": "%(path)s", \
+             "query_params": "%(query_params)s", "status_code": "%(status_code)s"}'
+
+
+def setup_root_logger():
+    logger = logging.getLogger('')
+    if logger.hasHandlers():
+        logger.handlers.clear()
+    formatter = logging.Formatter(LOG_FORMAT)
+    console = logging.StreamHandler()
+    console.setFormatter(formatter)
+
+    if not os.path.exists(settings.logging.logger_filename):
+        open(settings.logging.logger_filename, 'w').close()
+
+    file = logging.handlers.RotatingFileHandler(  # type: ignore[attr-defined]
+        filename=settings.logging.logger_filename,
+        mode=settings.logging.logger_mod,
+        maxBytes=settings.logging.logger_maxbytes,
+        backupCount=settings.logging.logger_backup_count,
+    )
+    file.setFormatter(formatter)
+    logger.addHandler(console)
+    logger.addHandler(file)
+    logger.setLevel(logging.INFO)
+
+    factory = logging.getLogRecordFactory()
+
+    def record_factory(*args, **kwargs):
+        record = factory(*args, **kwargs)
+        record.request_id = ctx_request_id.get(uuid.uuid4())
+        return record
+
+    logging.setLogRecordFactory(record_factory)
+
+
+LOG_DEFAULT_HANDLERS = ['console']
 
 LOGGING = {
     'version': 1,
@@ -36,13 +80,8 @@ LOGGING = {
         },
     },
     'loggers': {
-        '': {
-            'handlers': LOG_DEFAULT_HANDLERS,
-            'level': 'INFO',
-        },
-        'uvicorn.error': {
-            'level': 'INFO',
-        },
+        '': {'handlers': LOG_DEFAULT_HANDLERS, 'level': 'INFO'},
+        'uvicorn.error': {'level': 'INFO'},
         'uvicorn.access': {
             'handlers': ['access'],
             'level': 'INFO',
@@ -55,3 +94,6 @@ LOGGING = {
         'handlers': LOG_DEFAULT_HANDLERS,
     },
 }
+
+
+logger = logging.getLogger('auth_logger')

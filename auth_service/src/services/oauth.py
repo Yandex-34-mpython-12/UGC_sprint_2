@@ -1,3 +1,4 @@
+import uuid
 from abc import ABC, abstractmethod
 from http import HTTPStatus
 
@@ -8,6 +9,8 @@ from httpx import AsyncClient
 from src.api.dependencies.http_client import get_http_client
 from src.core.config import settings
 from src.schemas import OAuthUser
+
+from src.core.context import ctx_request_id
 
 oauth = OAuth()
 oauth.register(
@@ -45,7 +48,10 @@ class YandexOauth2(BaseOAuthService):
 
     @staticmethod
     def get_headers(token: str) -> dict[str, str]:
-        return {"Authorization": f"OAuth {token}"}
+        return {
+            "Authorization": f"OAuth {token}",
+            "X-Request-Id": ctx_request_id.get(uuid.uuid4()),
+        }
 
 
 class OAuth2Service:

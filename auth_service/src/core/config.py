@@ -1,13 +1,8 @@
 import logging
 import os
-from logging import config as logging_config
 
 from pydantic import BaseModel, SecretStr
 from pydantic_settings import BaseSettings, SettingsConfigDict
-from src.core.logger import LOGGING
-
-# Применяем настройки логирования
-logging_config.dictConfig(LOGGING)
 
 
 class RunConfig(BaseModel):
@@ -103,6 +98,15 @@ class OAuth2Config(BaseModel):
     secret_key: SecretStr
 
 
+class LoggingConfig(BaseModel):
+    log_level: str = 'INFO'
+
+    logger_filename: str
+    logger_maxbytes: int = 15000000
+    logger_mod: str = 'a'
+    logger_backup_count: int = 5
+
+
 class Settings(BaseSettings):
     model_config = SettingsConfigDict(
         env_file=".env",
@@ -118,6 +122,7 @@ class Settings(BaseSettings):
     access_token: AccessToken
     jaeger: JaegerConfig = JaegerConfig()
     oauth: OAuth2Config
+    logging: LoggingConfig
 
 
 settings = Settings()
