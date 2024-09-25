@@ -2,7 +2,7 @@
 import os
 from logging import config as logging_config
 
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, MongoDsn
 from pydantic_settings import BaseSettings, SettingsConfigDict
 from src.core.logger import LOGGING
 
@@ -31,6 +31,11 @@ class KafkaConfig(BaseModel):
         return f"{self.host}:{self.port}"
 
 
+class MongoConfig(BaseModel):
+    mongodb_uri: MongoDsn
+    mongodb_db_name: str
+
+
 class Settings(BaseSettings):
     model_config = SettingsConfigDict(
         env_file=f"{os.path.dirname(os.path.abspath(__file__))}/../../.env",
@@ -43,6 +48,7 @@ class Settings(BaseSettings):
     jwt_algorithm: str = Field(..., alias='JWT_ALGORITHM')
     api: ApiPrefix = ApiPrefix()
     kafka: KafkaConfig
+    mongo: MongoConfig
 
 
 settings = Settings()
