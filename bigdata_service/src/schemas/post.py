@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import datetime, timezone
 from uuid import UUID
 
 from pydantic import BaseModel, ConfigDict, Field
@@ -13,7 +13,12 @@ class PostCreateDto(BaseModel):
 
 
 class Like(BaseModel):
-    created_at: datetime
+    created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+    author: Author
+
+
+class LikeCreateDto(BaseModel):
+    post_id: UUID
     author: Author
 
 
