@@ -1,2 +1,1 @@
-from src.schemas.movie_rating import MovieRatingCreate, MovieRatingResponse
-from src.schemas.movie_update import MovieProgressUpdate
+from src.schemas.movie import MovieProgressUpdate

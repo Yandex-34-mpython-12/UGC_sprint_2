@@ -2,12 +2,10 @@ from enum import Enum
 from uuid import UUID
 
 from fastapi import Request
-from pydantic import Field
-
-from .base import BaseOrjsonModel
+from pydantic import Field, BaseModel
 
 
-class User(BaseOrjsonModel):
+class User(BaseModel):
     uuid: UUID = Field(..., alias="sub")
     role: "UserRole" = Field(..., alias="role")
 
