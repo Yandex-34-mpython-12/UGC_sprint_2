@@ -24,7 +24,7 @@ def setup_root_logger():
     if not os.path.exists(settings.logging.logger_filename):
         open(settings.logging.logger_filename, 'w').close()
 
-    file = logging.handlers.RotatingFileHandler(
+    file = logging.handlers.RotatingFileHandler(  # type: ignore[attr-defined]
         filename=settings.logging.logger_filename,
         mode=settings.logging.logger_mod,
         maxBytes=settings.logging.logger_maxbytes,
