@@ -1,6 +1,6 @@
 import os
 
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, MongoDsn
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
@@ -34,6 +34,11 @@ class LoggingConfig(BaseModel):
     logger_backup_count: int = 5
 
 
+class MongoConfig(BaseModel):
+    mongodb_uri: MongoDsn
+    mongodb_db_name: str
+
+
 class Settings(BaseSettings):
     model_config = SettingsConfigDict(
         env_file=f"{os.path.dirname(os.path.abspath(__file__))}/../../.env",
@@ -47,6 +52,7 @@ class Settings(BaseSettings):
     api: ApiPrefix = ApiPrefix()
     kafka: KafkaConfig
     logging: LoggingConfig
+    mongo: MongoConfig
 
 
 settings = Settings()

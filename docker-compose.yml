@@ -1,3 +1,12 @@
+x-mongo-common: &mongo-common
+  image: mongo:5.0.21
+  healthcheck:
+    test: echo 'db.runCommand("ping").ok' | mongo $(hostname)/test --quiet
+    interval: 10s
+    timeout: 5s
+    retries: 3
+    start_period: 10s
+
 services:
   admin:
     build: admin_service/app
@@ -101,8 +110,10 @@ services:
       - bigdata_logs:/app/logs
     expose:
       - 8000
+    ports:
+      - 8000:8000
     depends_on:
-      bigdata_db:
+      mongos:
         condition: service_healthy
       kafka-0:
         condition: service_healthy
@@ -113,26 +124,6 @@ services:
       interval: 10s
       timeout: 5s
       retries: 5
-
-  bigdata_db:
-    image: bitnami/postgresql:16
-    container_name: bigdata_db
-    env_file: .env
-    environment:
-      - POSTGRESQL_DATABASE=${BIGDATA_CONFIG__DB__DB_NAME}
-      - POSTGRESQL_USERNAME=${BIGDATA_CONFIG__DB__USER}
-      - POSTGRESQL_PASSWORD=${BIGDATA_CONFIG__DB__PASSWORD}
-      - POSTGRESQL_MASTER_HOST=${BIGDATA_CONFIG__DB__HOST}
-      - POSTGRESQL_MASTER_PORT_NUMBER=${BIGDATA_CONFIG__DB__PORT}
-    expose:
-      - 5432
-    volumes:
-      - bigdata_db_data:/var/lib/postgresql/data
-    healthcheck:
-      test: ["CMD-SHELL", "pg_isready -d auth_db -U postgres"]
-      interval: 2s
-      timeout: 10s
-      retries: 30
 
   redis:
     image: redis:7.4.0
@@ -222,6 +213,11 @@ services:
       - ./kafka/env/kafka_0.env
     volumes:
       - kafka-0_data:/bitnami/kafka
+    depends_on:
+      kafka-1:
+        condition: service_healthy
+      kafka-2:
+        condition: service_healthy
     healthcheck:
       test: kafka-cluster.sh cluster-id --bootstrap-server localhost:9092 || exit 1
       interval: 1s
@@ -336,11 +332,126 @@ services:
     environment:
       - ELASTICSEARCH_HOSTS=http://elasticsearch-logs:9200
 
+  mongo_cnf_n1:
+    <<: *mongo-common
+    hostname: mongo_cnf_n1
+    container_name: mongo_cnf_n1
+    command: mongod --configsvr --replSet mongo_cnf --dbpath /data/db --port 27017 --bind_ip localhost,mongo_cnf_n1
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      - mongo_cnf_n1_data:/data/db
+
+  mongo_cnf_n2:
+    <<: *mongo-common
+    hostname: mongo_cnf_n2
+    container_name: mongo_cnf_n2
+    command: mongod --configsvr --replSet mongo_cnf --dbpath /data/db --port 27017 --bind_ip localhost,mongo_cnf_n2
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      - mongo_cnf_n2_data:/data/db
+
+  config_cnf_rs:
+    <<: *mongo-common
+    volumes:
+      - ./mongo_config/rs_cnf_setup.js:/conf/setup.js
+    command:
+      ["mongosh", "--host", "mongo_cnf_n1", "--port", "27017", "/conf/setup.js"]
+    depends_on:
+      mongo_cnf_n1:
+        condition: service_healthy
+      mongo_cnf_n2:
+        condition: service_healthy
+
+  mongo_rs1_n1:
+    <<: *mongo-common
+    hostname: mongo_rs1_n1
+    container_name: mongo_rs1_n1
+    command: mongod --shardsvr --replSet mongo_rs1 --dbpath /data/db --port 27017 --bind_ip localhost,mongo_rs1_n1
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      - mongo_rs1_n1_data:/data/db
+
+  mongo_rs1_n2:
+    <<: *mongo-common
+    hostname: mongo_rs1_n2
+    container_name: mongo_rs1_n2
+    command: mongod --shardsvr --replSet mongo_rs1 --dbpath /data/db --port 27017 --bind_ip localhost,mongo_rs1_n2
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      - mongo_rs1_n2_data:/data/db
+
+  config_rs1:
+    <<: *mongo-common
+    volumes:
+      - ./mongo_config/rs_1_setup.js:/conf/setup.js
+    command:
+      ["mongosh", "--host", "mongo_rs1_n1", "--port", "27017", "/conf/setup.js"]
+    depends_on:
+      mongo_rs1_n1:
+        condition: service_healthy
+      mongo_rs1_n2:
+        condition: service_healthy
+
+  mongo_rs2_n1:
+    <<: *mongo-common
+    hostname: mongo_rs2_n1
+    container_name: mongo_rs2_n1
+    command: mongod --shardsvr --replSet mongo_rs2 --dbpath /data/db --port 27017 --bind_ip localhost,mongo_rs2_n1
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      - mongo_rs2_n1_data:/data/db
+
+  mongo_rs2_n2:
+    <<: *mongo-common
+    hostname: mongo_rs2_n2
+    container_name: mongo_rs2_n2
+    command: mongod --shardsvr --replSet mongo_rs2 --dbpath /data/db --port 27017 --bind_ip localhost,mongo_rs2_n2
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      - mongo_rs2_n2_data:/data/db
+
+  config_rs2:
+    <<: *mongo-common
+    volumes:
+      - ./mongo_config/rs_2_setup.js:/conf/setup.js
+    command:
+      ["mongosh", "--host", "mongo_rs2_n1", "--port", "27017", "/conf/setup.js"]
+    depends_on:
+      mongo_rs2_n1:
+        condition: service_healthy
+      mongo_rs2_n2:
+        condition: service_healthy
+
+  mongos:
+    <<: *mongo-common
+    command: mongos --configdb mongo_cnf/mongo_cnf_n1:27017,mongo_cnf_n2:27017 --port 27017 --bind_ip localhost,mongos
+    hostname: mongos
+    container_name: mongos
+    ports:
+      - "27017:27017"
+    environment:
+      - MONGO_INITDB_DATABASE=posts_db
+    depends_on:
+      config_rs1:
+        condition: service_completed_successfully
+      config_rs2:
+        condition: service_completed_successfully
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+
+  config_shared_cluster:
+    <<: *mongo-common
+    command:
+      ["mongosh", "--host", "mongos", "--port", "27017", "/conf/setup.js"]
+    volumes:
+      - ./mongo_config/sharded_cluster_setup.js:/conf/setup.js
+    depends_on:
+      mongos:
+        condition: service_healthy
+
 volumes:
   films_db_data:
   auth_db_data:
-  admin_db_data:
-  bigdata_db_data:
   redis_data:
   es_data:
   kafka-0_data:
@@ -351,3 +462,9 @@ volumes:
   auth_logs:
   films_logs:
   bigdata_logs:
+  mongo_rs1_n1_data:
+  mongo_rs1_n2_data:
+  mongo_rs2_n1_data:
+  mongo_rs2_n2_data:
+  mongo_cnf_n1_data:
+  mongo_cnf_n2_data:
