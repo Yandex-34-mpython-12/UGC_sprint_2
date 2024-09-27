@@ -14,9 +14,6 @@ services:
   admin:
     ports:
       - 8004:8000
-  bigdata_db:
-    ports:
-      - 5433:5432
   films_db:
     ports:
       - 5434:5432

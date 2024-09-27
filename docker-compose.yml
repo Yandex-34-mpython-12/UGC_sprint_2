@@ -331,6 +331,7 @@ services:
       - elasticsearch-logs
     environment:
       - ELASTICSEARCH_HOSTS=http://elasticsearch-logs:9200
+
   mongo_cnf_n1:
     <<: *mongo-common
     hostname: mongo_cnf_n1
@@ -451,8 +452,6 @@ services:
 volumes:
   films_db_data:
   auth_db_data:
-  admin_db_data:
-  bigdata_db_data:
   redis_data:
   es_data:
   kafka-0_data:
