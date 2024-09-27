@@ -102,8 +102,10 @@ async def _increase_views_transaction(ids: list[UUID]) -> list[Post]:
     """
     async with await mongo.mongo_client.start_session() as session:
         async with session.start_transaction():
-            for id in ids:
-                post = await Post.find_one(Post.id == id, session=session)
+            for _id in ids:
+                post = await Post.find_one(Post.id == _id, session=session)
+                if not post:
+                    continue
                 post.views += 1
                 await post.replace(session=session)
                 posts.append(post)
