@@ -1,5 +1,4 @@
 import logging
-import os
 import uuid
 
 from src.core.config import settings
@@ -13,15 +12,14 @@ LOG_FORMAT = '{"request_id": "%(request_id)s", "asctime": \
 
 
 def setup_root_logger():
-    logger = logging.getLogger("")
-    if logger.hasHandlers():
-        logger.handlers.clear()
-    formatter = logging.Formatter(LOG_FORMAT)
-    console = logging.StreamHandler()
-    console.setFormatter(formatter)
+    root_logger = logging.getLogger("")
+    if root_logger.hasHandlers():
+        root_logger.handlers.clear()
 
-    if not os.path.exists(settings.logging.logger_filename):
-        open(settings.logging.logger_filename, "w").close()
+    app_logger = logging.getLogger("app_logger")
+    formatter = logging.Formatter(LOG_FORMAT)
+    console_handler = logging.StreamHandler()
+    console_handler.setFormatter(formatter)
 
     file = logging.handlers.RotatingFileHandler(  # type: ignore[attr-defined]
         filename=settings.logging.logger_filename,
@@ -30,9 +28,9 @@ def setup_root_logger():
         backupCount=settings.logging.logger_backup_count,
     )
     file.setFormatter(formatter)
-    logger.addHandler(console)
-    logger.addHandler(file)
-    logger.setLevel(logging.INFO)
+    app_logger.addHandler(console_handler)
+    app_logger.addHandler(file)
+    app_logger.setLevel(logging.INFO)
 
     factory = logging.getLogRecordFactory()
 
@@ -94,5 +92,4 @@ LOGGING = {
     },
 }
 
-
-logger = logging.getLogger("auth_logger")
+logger = logging.getLogger("app_logger")
