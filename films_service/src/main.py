@@ -1,4 +1,5 @@
 import logging
+import sentry_sdk
 from contextlib import asynccontextmanager
 
 import uvicorn
@@ -30,6 +31,13 @@ async def lifespan(app: FastAPI):
     # on_shutdown
     await redis.redis.aclose()
     await elastic.es.close()
+
+
+sentry_sdk.init(
+    dsn="https://3b658373696aeb1a2032d5b3f870caa6@o4508031233818624.ingest.de.sentry.io/4508036491182160",
+    traces_sample_rate=1.0,
+    profiles_sample_rate=1.0,
+)
 
 
 app = FastAPI(

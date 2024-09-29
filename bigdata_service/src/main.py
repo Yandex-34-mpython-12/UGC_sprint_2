@@ -1,5 +1,6 @@
 import logging
 from contextlib import asynccontextmanager
+import sentry_sdk
 
 import uvicorn
 from aiokafka import AIOKafkaProducer
@@ -52,10 +53,17 @@ def create_app():
     return application
 
 
+# Initialize Sentry
+sentry_sdk.init(
+    dsn="https://a28909cb173753ebac03ea2ea786b990@o4508031233818624.ingest.de.sentry.io/4508031242534992",
+    traces_sample_rate=1.0,
+    profiles_sample_rate=1.0,
+)
+
 app = create_app()
 app.add_middleware(RequestLogMiddleware)
 
-if __name__ == "__main__":
+if __name__ == '__main__':
     uvicorn.run(
         "main:app",
         host="0.0.0.0",

@@ -1,6 +1,7 @@
 from contextlib import asynccontextmanager
 
 import uvicorn
+import sentry_sdk
 from fastapi import FastAPI
 from fastapi.responses import ORJSONResponse
 from opentelemetry.instrumentation.fastapi import FastAPIInstrumentor
@@ -46,6 +47,11 @@ if settings.jaeger.enable:
     configure_tracer()
     FastAPIInstrumentor.instrument_app(app)
 
+sentry_sdk.init(
+    dsn="https://0d47a4434316bfab230c8b7acdd408f8@o4508031233818624.ingest.de.sentry.io/4508036352180304",
+    traces_sample_rate=1.0,
+    profiles_sample_rate=1.0,
+)
 
 if __name__ == '__main__':
     uvicorn.run(

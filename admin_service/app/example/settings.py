@@ -3,6 +3,13 @@ from pathlib import Path
 
 from dotenv import load_dotenv
 from split_settings.tools import include
+import sentry_sdk
+
+sentry_sdk.init(
+    dsn="https://5fe508b501e576ca56ab613a600dc49c@o4508031233818624.ingest.de.sentry.io/4508036440064080",
+    traces_sample_rate=1.0,
+    profiles_sample_rate=1.0,
+)
 
 load_dotenv()
 

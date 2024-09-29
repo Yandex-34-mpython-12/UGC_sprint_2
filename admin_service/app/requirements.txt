@@ -11,3 +11,4 @@ requests==2.32.3
 PyJWT==2.8.0
 django-redis==5.4.0
 debugpy
+sentry-sdk==2.14.0
