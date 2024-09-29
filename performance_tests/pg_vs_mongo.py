@@ -16,7 +16,7 @@ MONGODB_URI = "mongodb://localhost:27017"
 MONGODB_DB = "test_db"
 
 
-ITERATIONS = 10_000
+ITERATIONS = 1000
 
 
 class MongoRecord(Document):
@@ -31,6 +31,8 @@ async def init_postgres():
             name TEXT
         )
     """)
+    print(f"PostgreSQL: Created table test_table")
+
     await conn.close()
 
 
