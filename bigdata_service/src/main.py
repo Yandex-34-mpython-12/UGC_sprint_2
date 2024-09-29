@@ -12,7 +12,7 @@ from src.core.config import settings
 from src.core.logger import LOGGING, setup_root_logger
 from src.db import init_db, mongo
 from src.middleware.request_log import RequestLogMiddleware
-from src.services import kafka
+from src.db import kafka
 
 setup_root_logger()
 
