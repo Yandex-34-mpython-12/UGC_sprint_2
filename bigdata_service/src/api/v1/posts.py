@@ -1,15 +1,11 @@
 import logging
 from uuid import UUID
 
-from beanie.odm.operators.find.comparison import In
-from fastapi import APIRouter, status, HTTPException, BackgroundTasks
-from fastapi_pagination.ext.beanie import paginate
-
-from src.core.config import settings
+from fastapi import APIRouter, BackgroundTasks, Depends, HTTPException, status
 from src.core.pagination import PaginatedPage
-from src.db import mongo
 from src.models import Post
-from src.schemas.post import PostResponse, PostCreateDto, Like, LikeCreateDto
+from src.schemas.post import Like, LikeCreateDto, PostCreateDto, PostResponse
+from src.services.post import PostService, get_post_service
 
 router = APIRouter(prefix='/posts', tags=['Posts'])
 
@@ -22,9 +18,11 @@ logger = logging.getLogger().getChild('posts-router')
     response_model=PostResponse,
     status_code=status.HTTP_201_CREATED
 )
-async def _create_post(dto: PostCreateDto) -> Post:
-    post = await Post.create_new(dto=dto)
-    return post
+async def _create_post(
+    dto: PostCreateDto,
+    post_svc: PostService = Depends(get_post_service)
+) -> Post:
+    return await post_svc.create_post(dto=dto)
 
 
 @router.get(
@@ -33,43 +31,40 @@ async def _create_post(dto: PostCreateDto) -> Post:
     response_model=PaginatedPage[PostResponse],
     status_code=status.HTTP_200_OK,
 )
-async def _get_all_posts() -> PaginatedPage[Post]:
-    items = await paginate(Post.find_all())
-    return items
-
-
-@router.get(
-    '/raw-list/',
-    summary='Get a list of posts without ODM',
-    response_model=list[PostResponse],
-    status_code=status.HTTP_200_OK,
-)
-async def _get_items(page: int = 1, limit: int = 10) -> list[Post]:
-    client = mongo.mongo_client[settings.mongo.mongodb_db_name]
-    return await client.posts.find().skip(page).limit(limit).to_list(limit)
+async def _get_all_posts(
+    post_svc: PostService = Depends(get_post_service)
+) -> PaginatedPage[Post]:
+    return await post_svc.get_all_posts()
 
 
 @router.get('/{id}', response_model=PostResponse, status_code=status.HTTP_200_OK)
-async def _get_post(id: UUID, bg_tasks: BackgroundTasks) -> Post:
-    post = await Post.get_by_id(id=id)
+async def _get_post(
+    id: UUID,
+    bg_tasks: BackgroundTasks,
+    post_svc: PostService = Depends(get_post_service),
+) -> Post:
+    post = await post_svc.get_by_id(post_id=id)
     if not post:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
             detail=f'Post with id {id} not found',
         )
-    bg_tasks.add_task(Post.visit, instance=post)
+    bg_tasks.add_task(post_svc.inc_post_view, post=post)
     return post
 
 
 @router.delete('/{id}', summary='Delete post', status_code=status.HTTP_204_NO_CONTENT)
-async def _delete_post(id: UUID) -> None:
-    post = await Post.get_by_id(id=id)
+async def _delete_post(
+    id: UUID,
+    post_svc: PostService = Depends(get_post_service)
+) -> None:
+    post = await post_svc.get_by_id(post_id=id)
     if not post:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
             detail=f'Post with ID {id} not found',
         )
-    await post.delete()
+    await post_svc.delete_post(post=post)
 
 
 @router.post(
@@ -78,10 +73,11 @@ async def _delete_post(id: UUID) -> None:
     response_model=list[PostResponse],
     status_code=status.HTTP_200_OK,
 )
-async def _increase_views(ids: list[UUID]) -> list[Post]:
-    query = Post.find(In(Post.id, ids))
-    await query.inc({Post.views: 1})
-    return await query.to_list()
+async def _increase_views(
+    ids: list[UUID],
+    post_svc: PostService = Depends(get_post_service),
+) -> list[Post]:
+    return await post_svc.inc_views(ids=ids)
 
 
 @router.post(
@@ -90,26 +86,11 @@ async def _increase_views(ids: list[UUID]) -> list[Post]:
     response_model=list[PostResponse],
     status_code=status.HTTP_200_OK,
 )
-async def _increase_views_transaction(ids: list[UUID]) -> list[Post]:
-    posts = []
-    """
-        Wrong way:
-        for id in ids:
-        post = await Post.find_one(Post.id == id)
-        post.views += 1
-        await post.replace()
-        posts.append(post)
-    """
-    async with await mongo.mongo_client.start_session() as session:
-        async with session.start_transaction():
-            for _id in ids:
-                post = await Post.find_one(Post.id == _id, session=session)
-                if not post:
-                    continue
-                post.views += 1
-                await post.replace(session=session)
-                posts.append(post)
-    return posts
+async def _increase_views_transaction(
+    ids: list[UUID],
+    post_svc: PostService = Depends(get_post_service),
+) -> list[Post]:
+    return await post_svc.inc_views_transaction(ids=ids)
 
 
 @router.get(
@@ -118,8 +99,11 @@ async def _increase_views_transaction(ids: list[UUID]) -> list[Post]:
     response_model=list[PostResponse],
     status_code=status.HTTP_200_OK,
 )
-async def _get_authors_post(authors_last_name: str) -> list[Post]:
-    return await Post.find_many(Post.author.last_name == authors_last_name).to_list()
+async def _get_authors_post(
+    author_last_name: str,
+    post_svc: PostService = Depends(get_post_service),
+) -> list[Post]:
+    return await post_svc.get_authors_post(author_last_name=author_last_name)
 
 
 @router.get(
@@ -128,8 +112,8 @@ async def _get_authors_post(authors_last_name: str) -> list[Post]:
     response_model=dict,
     status_code=status.HTTP_200_OK,
 )
-async def _get_avg_views() -> dict:
-    avg = await Post.find().avg(Post.views)
+async def _get_avg_views(post_svc: PostService = Depends(get_post_service)) -> dict:
+    avg = await post_svc.get_avg_views()
     return {'result': avg}
 
 
@@ -139,11 +123,13 @@ async def _get_avg_views() -> dict:
     response_model=Like,
     status_code=status.HTTP_201_CREATED,
 )
-async def _create_like(dto: LikeCreateDto) -> Like:
-    like = Like(author=dto.author)
-    result = await Post.find_one(Post.id == dto.post_id).update({"$push": {"likes": like}})
+async def _create_like(
+    dto: LikeCreateDto,
+    post_svc: PostService = Depends(get_post_service)
+) -> Like:
+    like = await post_svc.set_like(dto=dto)
 
-    if result.modified_count == 0:
+    if like is None:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
             detail=f'Post with id {dto.post_id} not found',

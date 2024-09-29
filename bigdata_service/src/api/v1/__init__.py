@@ -1,10 +1,10 @@
 from fastapi import APIRouter
 from src.core.config import settings
 
+from .comments import router as comments_router
 from .health import router as health_router
 from .movies import router as movies_router
 from .posts import router as posts_router
-from .comments import router as comments_router
 
 v1_router = APIRouter(
     prefix=settings.api.v1.prefix,

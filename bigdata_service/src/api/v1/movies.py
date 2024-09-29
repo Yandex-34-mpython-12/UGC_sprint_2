@@ -1,11 +1,7 @@
-import json
-
-from aiokafka import AIOKafkaProducer
 from fastapi import APIRouter, Depends
-from src.core.config import settings
 from src.models.auth import User
-from src.schemas import MovieProgressUpdate
-from src.services.kafka import get_kafka_producer
+from src.schemas.movie import MovieProgressUpdate
+from src.services.movie import MovieService, get_movie_service
 
 from .auth import get_current_user_global
 
@@ -19,19 +15,9 @@ router = APIRouter(
 async def update_progress(
     progress_update: MovieProgressUpdate,
     user: User = Depends(get_current_user_global),
-    kafka_producer: AIOKafkaProducer = Depends(get_kafka_producer)
-):
-    kafka_message = {
-        "user_id": str(user.uuid),
-        "movie_id": str(progress_update.movie_id),
-        "progress": progress_update.progress,
-        "status": progress_update.status,
-        "last_watched": progress_update.last_watched.strftime("%Y-%m-%d %H:%M:%S")
-    }
-    # Convert the dictionary to a JSON string and then encode it to bytes
-    message_bytes = json.dumps(kafka_message).encode('utf-8')
-
-    # Send the message to Kafka
-    await kafka_producer.send_and_wait(settings.kafka.topic, message_bytes)
-
-    return {"status": "Message sent", "message": kafka_message}
+    movie_svc: MovieService = Depends(get_movie_service)
+) -> dict:
+    return await movie_svc.update_movie_progress(
+        user_id=user.uuid,
+        progress_update=progress_update,
+    )

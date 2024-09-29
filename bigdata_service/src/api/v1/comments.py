@@ -1,9 +1,8 @@
 import logging
 from uuid import UUID
 
-from fastapi import APIRouter, status, HTTPException
+from fastapi import APIRouter, HTTPException, status
 from fastapi_pagination.ext.beanie import paginate
-
 from src.core.pagination import PaginatedPage
 from src.models import Post
 from src.models.comment import Comment

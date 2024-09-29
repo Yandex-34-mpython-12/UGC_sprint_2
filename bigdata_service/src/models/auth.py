@@ -2,7 +2,7 @@ from enum import Enum
 from uuid import UUID
 
 from fastapi import Request
-from pydantic import Field, BaseModel
+from pydantic import BaseModel, Field
 
 
 class User(BaseModel):

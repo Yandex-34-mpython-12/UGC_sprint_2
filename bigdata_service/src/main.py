@@ -7,12 +7,11 @@ from fastapi import FastAPI
 from fastapi.responses import ORJSONResponse
 from fastapi_pagination import add_pagination
 from motor.motor_asyncio import AsyncIOMotorClient
-
 from src.api import setup_routers
 from src.core.config import settings
 from src.core.logger import LOGGING, setup_root_logger
+from src.db import init_db, mongo
 from src.middleware.request_log import RequestLogMiddleware
-from src.db import mongo, init_db
 from src.services import kafka
 
 setup_root_logger()

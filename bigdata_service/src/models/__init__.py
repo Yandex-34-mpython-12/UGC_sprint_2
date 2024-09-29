@@ -3,10 +3,10 @@ from typing import Sequence, Type, TypeVar
 
 from beanie import Document
 
+from .comment import Comment  # noqa: F401
 # All database models must be imported here to be able to
 # initialize them on startup.
 from .post import Post  # noqa: F401
-from .comment import Comment  # noqa: F401
 
 DocType = TypeVar('DocType', bound=Document)
 

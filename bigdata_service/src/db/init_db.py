@@ -1,6 +1,5 @@
 from beanie import init_beanie
 from motor.motor_asyncio import AsyncIOMotorClient
-
 from src.core.config import settings
 from src.models import gather_documents
 

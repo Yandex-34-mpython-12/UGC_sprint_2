@@ -2,7 +2,6 @@ from datetime import datetime, timezone
 from uuid import UUID
 
 from pydantic import BaseModel, ConfigDict, Field
-
 from src.schemas.author import Author
 
 

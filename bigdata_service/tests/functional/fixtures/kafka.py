@@ -14,7 +14,7 @@ async def aiohttp_client():
 
 @pytest_asyncio.fixture
 def kafka_producer_mock():
-    with patch('src.services.kafka.get_kafka_producer') as kafka_producer:
+    with patch('src.db.kafka.get_kafka_producer') as kafka_producer:
         yield kafka_producer
 
 

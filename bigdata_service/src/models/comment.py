@@ -4,9 +4,8 @@ from uuid import UUID, uuid4
 
 from beanie import Document
 from pydantic import Field
-
-from src.schemas.comment import CommentCreateDto
 from src.schemas.author import Author
+from src.schemas.comment import CommentCreateDto
 
 
 class Comment(Document):
