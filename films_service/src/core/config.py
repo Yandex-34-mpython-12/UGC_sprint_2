@@ -1,12 +1,25 @@
 import os
 
-from pydantic import Field
+from pydantic import Field, BaseModel
 from pydantic_settings import BaseSettings, SettingsConfigDict
+
+
+class LoggingConfig(BaseModel):
+    log_level: str = 'INFO'
+    logger_filename: str
+    logger_maxbytes: int = 15000000
+    logger_mod: str = 'a'
+    logger_backup_count: int = 5
 
 
 class Settings(BaseSettings):
     model_config = SettingsConfigDict(
-        env_file='.env', env_file_encoding='utf-8', extra='ignore')
+        env_file=".env",
+        case_sensitive=False,
+        extra="ignore",
+        env_nested_delimiter="__",
+        env_prefix="FILMS_CONFIG__",
+    )
 
     project_name: str = Field('movies', alias='PROJECT_NAME')
     project_version: str = Field('0.0.1', alias='PROJECT_VERSION')
@@ -26,12 +39,7 @@ class Settings(BaseSettings):
     request_limit_per_minute: int = Field(60, alias='REQUEST_LIMIT_PER_MINUTE')
     enable_tracing: bool = Field(True, alias='ENABLE_TRACING')
 
-    log_level: str = Field('INFO', alias='LOG_LEVEL')
-
-    logger_filename: str = Field(alias='LOGGER_FILENAME')
-    logger_maxbytes: int = Field(15000000, alias='LOGGER_MAXBYTES')
-    logger_mod: str = Field('a', alias='LOGGER_MOD')
-    logger_backup_count: int = Field(5, alias='LOGGER_BACKUP_COUNT')
+    logging: LoggingConfig
 
 
 settings = Settings()
