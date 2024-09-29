@@ -25,7 +25,7 @@
 - в логах корректно передается X-Request-Id
 - можно просмотреть логи `auth_service, films_service, bigdata_service`
 - в логах нет приватной информации
-
+![elk](./img/elk.png)
 
 ### Mongodb vs postgres
 Анализ проведен при помощи `perofrmance_tests/pg_vs_mongo.py`. Записывается одна запись 
