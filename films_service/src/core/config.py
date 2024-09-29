@@ -12,6 +12,11 @@ class LoggingConfig(BaseModel):
     logger_backup_count: int = 5
 
 
+class RunConfig(BaseModel):
+    project_name: str
+    project_version: str = '0.0.1'
+
+
 class Settings(BaseSettings):
     model_config = SettingsConfigDict(
         env_file=".env",
@@ -21,13 +26,11 @@ class Settings(BaseSettings):
         env_prefix="FILMS_CONFIG__",
     )
 
-    project_name: str = Field('movies', alias='PROJECT_NAME')
-    project_version: str = Field('0.0.1', alias='PROJECT_VERSION')
-    redis_host: str = Field('127.0.0.1', alias='REDIS_HOST')
-    redis_port: int = Field(6379, alias='REDIS_PORT')
-    elastic_host: str = Field('127.0.0.1', alias='ELASTICSEARCH_HOST')
-    elastic_port: int = Field(9200, alias='ELASTICSEARCH_PORT')
-    elastic_schema: str = Field('http', alias='ELASTICSEARCH_SCHEMA')
+    redis_host: str
+    redis_port: int
+    elastic_host: str
+    elastic_port: int
+    elastic_schema: str
 
     jwt_secret_key: str = Field(..., alias='JWT_SECRET_KEY')
     jwt_algorithm: str = Field(..., alias='JWT_ALGORITHM')
@@ -36,10 +39,10 @@ class Settings(BaseSettings):
         'localhost', alias='JAEGER_AGENT_HOSTNAME')
     jaeger_agent_port: int = Field(6831, alias='JAEGER_AGENT_PORT')
 
-    request_limit_per_minute: int = Field(60, alias='REQUEST_LIMIT_PER_MINUTE')
-    enable_tracing: bool = Field(True, alias='ENABLE_TRACING')
-
+    request_limit_per_minute: int
+    enable_tracing: bool
     logging: LoggingConfig
+    run: RunConfig
 
 
 settings = Settings()

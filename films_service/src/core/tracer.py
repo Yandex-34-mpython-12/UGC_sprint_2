@@ -10,8 +10,8 @@ def configure_tracer() -> None:
     tracer_provider = TracerProvider(
         resource=Resource.create(
             {
-                SERVICE_NAME: settings.project_name,
-                SERVICE_VERSION: settings.project_version,
+                SERVICE_NAME: settings.run.project_name,
+                SERVICE_VERSION: settings.run.project_version,
             }
         ),
     )
