@@ -16,3 +16,4 @@ aiokafka==0.11.0
 fastapi-pagination==0.12.27
 beanie==1.26.0
 python-slugify==8.0.4
+sentry-sdk==2.14.0
