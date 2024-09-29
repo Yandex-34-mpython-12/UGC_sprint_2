@@ -38,7 +38,10 @@ class PostService:
     @classmethod
     async def inc_post_view(cls, *, post: Post) -> None:
         await Post.find_one(Post.id == post.id).update(
-            {"$inc": {"views": 1}, "$set": {"last_visit_at": datetime.now(timezone.utc)}}
+            {
+                "$inc": {"views": 1},
+                "$set": {"last_visit_at": datetime.now(timezone.utc)},
+            }
         )
 
     @classmethod
@@ -79,7 +82,9 @@ class PostService:
     @classmethod
     async def set_like(cls, *, dto: LikeCreateDto) -> Like | None:
         like = Like(author=dto.author)
-        result = await Post.find_one(Post.id == dto.post_id).update({"$push": {"likes": like}})
+        result = await Post.find_one(Post.id == dto.post_id).update(
+            {"$push": {"likes": like}}
+        )
         if result.modified_count == 0:
             return None
 

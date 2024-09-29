@@ -13,7 +13,7 @@ LOG_FORMAT = '{"request_id": "%(request_id)s", "asctime": \
 
 
 def setup_root_logger():
-    logger = logging.getLogger('')
+    logger = logging.getLogger("")
     if logger.hasHandlers():
         logger.handlers.clear()
     formatter = logging.Formatter(LOG_FORMAT)
@@ -21,7 +21,7 @@ def setup_root_logger():
     console.setFormatter(formatter)
 
     if not os.path.exists(settings.logging.logger_filename):
-        open(settings.logging.logger_filename, 'w').close()
+        open(settings.logging.logger_filename, "w").close()
 
     file = logging.handlers.RotatingFileHandler(  # type: ignore[attr-defined]
         filename=settings.logging.logger_filename,
@@ -44,55 +44,55 @@ def setup_root_logger():
     logging.setLogRecordFactory(record_factory)
 
 
-LOG_DEFAULT_HANDLERS = ['console']
+LOG_DEFAULT_HANDLERS = ["console"]
 
 LOGGING = {
-    'version': 1,
-    'disable_existing_loggers': False,
-    'formatters': {
-        'verbose': {'format': LOG_FORMAT},
-        'default': {
-            '()': 'uvicorn.logging.DefaultFormatter',
-            'fmt': '%(levelprefix)s %(message)s',
-            'use_colors': None,
+    "version": 1,
+    "disable_existing_loggers": False,
+    "formatters": {
+        "verbose": {"format": LOG_FORMAT},
+        "default": {
+            "()": "uvicorn.logging.DefaultFormatter",
+            "fmt": "%(levelprefix)s %(message)s",
+            "use_colors": None,
         },
-        'access': {
-            '()': 'uvicorn.logging.AccessFormatter',
-            'fmt': "%(levelprefix)s %(client_addr)s - '%(request_line)s' %(status_code)s",
-        },
-    },
-    'handlers': {
-        'console': {
-            'level': 'DEBUG',
-            'class': 'logging.StreamHandler',
-            'formatter': 'verbose',
-        },
-        'default': {
-            'formatter': 'default',
-            'class': 'logging.StreamHandler',
-            'stream': 'ext://sys.stdout',
-        },
-        'access': {
-            'formatter': 'access',
-            'class': 'logging.StreamHandler',
-            'stream': 'ext://sys.stdout',
+        "access": {
+            "()": "uvicorn.logging.AccessFormatter",
+            "fmt": "%(levelprefix)s %(client_addr)s - '%(request_line)s' %(status_code)s",
         },
     },
-    'loggers': {
-        '': {'handlers': LOG_DEFAULT_HANDLERS, 'level': 'INFO'},
-        'uvicorn.error': {'level': 'INFO'},
-        'uvicorn.access': {
-            'handlers': ['access'],
-            'level': 'INFO',
-            'propagate': False,
+    "handlers": {
+        "console": {
+            "level": "DEBUG",
+            "class": "logging.StreamHandler",
+            "formatter": "verbose",
+        },
+        "default": {
+            "formatter": "default",
+            "class": "logging.StreamHandler",
+            "stream": "ext://sys.stdout",
+        },
+        "access": {
+            "formatter": "access",
+            "class": "logging.StreamHandler",
+            "stream": "ext://sys.stdout",
         },
     },
-    'root': {
-        'level': 'INFO',
-        'formatter': 'verbose',
-        'handlers': LOG_DEFAULT_HANDLERS,
+    "loggers": {
+        "": {"handlers": LOG_DEFAULT_HANDLERS, "level": "INFO"},
+        "uvicorn.error": {"level": "INFO"},
+        "uvicorn.access": {
+            "handlers": ["access"],
+            "level": "INFO",
+            "propagate": False,
+        },
+    },
+    "root": {
+        "level": "INFO",
+        "formatter": "verbose",
+        "handlers": LOG_DEFAULT_HANDLERS,
     },
 }
 
 
-logger = logging.getLogger('auth_logger')
+logger = logging.getLogger("auth_logger")

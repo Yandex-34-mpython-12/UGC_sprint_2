@@ -11,10 +11,10 @@ class User(BaseModel):
 
 
 class UserRole(Enum):
-    anonymous: str = 'anonymous'
-    admin: str = 'admin'
-    user: str = 'user'
-    subscriber: str = 'subscriber'
+    anonymous: str = "anonymous"
+    admin: str = "admin"
+    user: str = "user"
+    subscriber: str = "subscriber"
 
 
 class AuthRequest(Request):

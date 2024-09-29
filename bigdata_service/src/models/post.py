@@ -20,5 +20,5 @@ class Post(Document):
     likes: list[Like] = Field(default_factory=list)
 
     class Settings:
-        name = 'posts'
+        name = "posts"
         use_state_management = True

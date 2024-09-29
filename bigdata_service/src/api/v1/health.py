@@ -6,6 +6,6 @@ router = APIRouter(
 )
 
 
-@router.get('/', summary='Проверка доступности сервиса')
+@router.get("/", summary="Проверка доступности сервиса")
 async def health():
-    return {'status': 'ok'}
+    return {"status": "ok"}

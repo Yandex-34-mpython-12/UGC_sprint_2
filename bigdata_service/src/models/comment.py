@@ -17,10 +17,8 @@ class Comment(Document):
 
     @classmethod
     async def create_new(cls, *, dto: CommentCreateDto) -> Self:
-        return await cls(
-            post_id=dto.post_id, text=dto.text, author=dto.author
-        ).insert()
+        return await cls(post_id=dto.post_id, text=dto.text, author=dto.author).insert()
 
     class Settings:
-        name = 'comments'
+        name = "comments"
         use_state_management = True

@@ -15,7 +15,7 @@ router = APIRouter(
 async def update_progress(
     progress_update: MovieProgressUpdate,
     user: User = Depends(get_current_user_global),
-    movie_svc: MovieService = Depends(get_movie_service)
+    movie_svc: MovieService = Depends(get_movie_service),
 ) -> dict:
     return await movie_svc.update_movie_progress(
         user_id=user.uuid,

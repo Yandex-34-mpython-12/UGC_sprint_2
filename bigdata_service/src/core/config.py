@@ -26,11 +26,11 @@ class KafkaConfig(BaseModel):
 
 
 class LoggingConfig(BaseModel):
-    log_level: str = 'INFO'
+    log_level: str = "INFO"
 
     logger_filename: str
     logger_maxbytes: int = 15000000
-    logger_mod: str = 'a'
+    logger_mod: str = "a"
     logger_backup_count: int = 5
 
 
@@ -47,8 +47,8 @@ class Settings(BaseSettings):
         env_prefix="BIGDATA_CONFIG__",
         extra="ignore",
     )
-    jwt_secret_key: str = Field(..., alias='JWT_SECRET_KEY')
-    jwt_algorithm: str = Field(..., alias='JWT_ALGORITHM')
+    jwt_secret_key: str = Field(..., alias="JWT_SECRET_KEY")
+    jwt_algorithm: str = Field(..., alias="JWT_ALGORITHM")
     api: ApiPrefix = ApiPrefix()
     kafka: KafkaConfig
     logging: LoggingConfig

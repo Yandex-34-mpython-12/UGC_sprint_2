@@ -4,10 +4,7 @@ from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
 class TestSettings(BaseSettings):
-    model_config = SettingsConfigDict(
-        env_file='.env',
-        env_file_encoding='utf-8'
-    )
+    model_config = SettingsConfigDict(env_file=".env", env_file_encoding="utf-8")
     project_name: str
     service_url: str
 

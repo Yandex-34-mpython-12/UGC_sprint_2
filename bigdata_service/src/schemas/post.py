@@ -22,9 +22,11 @@ class LikeCreateDto(BaseModel):
 
 
 class PostResponse(BaseModel):
-    model_config = ConfigDict(from_attributes=True, arbitrary_types_allowed=True, populate_by_name=True)
+    model_config = ConfigDict(
+        from_attributes=True, arbitrary_types_allowed=True, populate_by_name=True
+    )
 
-    id: UUID = Field(UUID, validation_alias='_id')
+    id: UUID = Field(UUID, validation_alias="_id")
     slug: str
     subject: str
     text: str

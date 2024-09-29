@@ -37,13 +37,13 @@ async def lifespan(_: FastAPI):
 def create_app():
     application = FastAPI(
         lifespan=lifespan,
-        title='bigdata_service',
-        docs_url='/api/openapi',
-        openapi_url='/api/openapi.json',
+        title="bigdata_service",
+        docs_url="/api/openapi",
+        openapi_url="/api/openapi.json",
         default_response_class=ORJSONResponse,
         root_path="/bigdata",
-        description='Bigdata Service',
-        version='0.1.0',
+        description="Bigdata Service",
+        version="0.1.0",
     )
 
     setup_routers(application)
@@ -55,10 +55,10 @@ def create_app():
 app = create_app()
 app.add_middleware(RequestLogMiddleware)
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     uvicorn.run(
-        'main:app',
-        host='0.0.0.0',
+        "main:app",
+        host="0.0.0.0",
         port=8000,
         log_config=LOGGING,
         log_level=settings.run.log_level,

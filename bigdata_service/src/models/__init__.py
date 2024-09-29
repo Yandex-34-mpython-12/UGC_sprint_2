@@ -8,7 +8,7 @@ from .comment import Comment  # noqa: F401
 # initialize them on startup.
 from .post import Post  # noqa: F401
 
-DocType = TypeVar('DocType', bound=Document)
+DocType = TypeVar("DocType", bound=Document)
 
 
 def gather_documents() -> Sequence[Type[DocType]]:
@@ -17,5 +17,5 @@ def gather_documents() -> Sequence[Type[DocType]]:
     return [
         doc
         for _, doc in getmembers(sys.modules[__name__], isclass)
-        if issubclass(doc, Document) and doc.__name__ != 'Document'
+        if issubclass(doc, Document) and doc.__name__ != "Document"
     ]

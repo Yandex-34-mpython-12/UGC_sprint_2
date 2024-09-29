@@ -12,9 +12,11 @@ class CommentCreateDto(BaseModel):
 
 
 class CommentResponse(BaseModel):
-    model_config = ConfigDict(from_attributes=True, arbitrary_types_allowed=True, populate_by_name=True)
+    model_config = ConfigDict(
+        from_attributes=True, arbitrary_types_allowed=True, populate_by_name=True
+    )
 
-    id: UUID = Field(UUID, validation_alias='_id')
+    id: UUID = Field(UUID, validation_alias="_id")
     post_id: UUID
     text: str
     created_at: datetime
